@@ -16,8 +16,8 @@ public class Launcher {
 
 	public static void main(String...strings) {
 		//longStory();
-		System.out.println("test");
-		//oneParticle(0.0, 0.1, 0.5);
+		//System.out.println("test");
+		oneParticle(0.25, 0.1, 1.0);
 	}
 
 
