@@ -12,7 +12,7 @@ public class Writer {
 		
 		ListIterator<Double> iter = averrageList.listIterator();
 		
-		File file = new File(name + ".txt");
+		File file = new File("res/" + name + ".txt");
 		try {
 			FileWriter writer = new FileWriter(file);
 

@@ -5,6 +5,7 @@ import java.util.*;
 import main.Calculator;
 import main.Vector;
 import main.fields.Circular;
+import main.fields.Lineal;
 
 public class PeriodCounter {
 
@@ -109,15 +110,18 @@ public class PeriodCounter {
 
 	private void reset(Calculator c) {
 		counter = 0;
-		omega = ((Circular) c.fieldsList.get(Circular.class)).getW();
+		omega = ((Lineal) c.fieldsList.get(Lineal.class)).getW();//TODO
 		startDot = c.M.clone();
 		isLastInside = true;
 		time = 0;
 		dt = c.dt;
 		list = new LinkedList<Vector>();
-		//energyList = new LinkedList<Double>();//TODO
-		//steps = 0;
-		//energy = 0;
+		
+		
+		
+		energyList = new LinkedList<Double>();//TODO
+		steps = 0;
+		energy = 0;
 	}
 
 	private static boolean isDotNearDot(Vector dot1, Vector dot2) {

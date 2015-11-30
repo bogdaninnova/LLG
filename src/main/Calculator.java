@@ -61,12 +61,6 @@ public class Calculator {
 		while (true) {
 			iteration();
 			pc.update(this);
-			counter++;
-			if (counter == 200) {
-				counter = 0;
-				energyList.add(pc.getEnergy());
-				orbitSeparationMethod(M);
-			}
 			array.add(new Vector(M));
 			if (t >  waitingTime + workingTime)
 				break;
@@ -74,19 +68,19 @@ public class Calculator {
 	}
 	
 	
-	private void orbitSeparationMethod(Vector M) {
-		Vector M1 = M.clone();
-		Vector M2 = Pertrubator.getNewPosition(M1);
-		M1 = M1.plus(getdM(M1));
-		M2 = M2.plus(getdM(M2));
-		lfList.add(Pertrubator.getLcurrent(M1, M2));
-		double summ = 0;
-		
-		for (Double a : lfList)
-			summ += a;
-		
-		lsList.add(summ / lfList.size() / dt);
-	}
+//	private void orbitSeparationMethod(Vector M) {
+//		Vector M1 = M.clone();
+//		Vector M2 = Pertrubator.getNewPosition(M1);
+//		M1 = M1.plus(getdM(M1));
+//		M2 = M2.plus(getdM(M2));
+//		lfList.add(Pertrubator.getLcurrent(M1, M2));
+//		double summ = 0;
+//		
+//		for (Double a : lfList)
+//			summ += a;
+//		
+//		lsList.add(summ / lfList.size() / dt);
+//	}
 
 	public void run() {
 		update();
