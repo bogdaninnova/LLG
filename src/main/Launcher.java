@@ -1,16 +1,12 @@
 package main;
 
-import java.util.*;
-
-import painting.Draw;
-
-import painting.CreateGIF;
-import painting.Draw;
-import painting.DrawComponents;
-
 import main.fields.Anisotrophia;
 import main.fields.Circular;
-import main.fields.Impuls;
+import painting.Draw;
+
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Launcher {
 
