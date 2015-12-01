@@ -1,77 +1,62 @@
 package main;
 
-import main.fields.Anisotrophia;
-import main.fields.Circular;
-import main.fields.EffectiveField;
-import main.fields.Lineal;
+import java.util.*;
+
 import painting.Draw;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
+import painting.CreateGIF;
+import painting.Draw;
+import painting.DrawComponents;
+
+import main.fields.Anisotrophia;
+import main.fields.Circular;
+import main.fields.Impuls;
 
 public class Launcher {
 
 	public static void main(String...strings) {
-
-		//oneParticle(0, 0.3, 0.7);
-		Q_w(0.05);
+		//longStory();
+		System.out.println("test");
+		//oneParticle(0.0, 0.1, 0.5);
 	}
 
-
-	public static void Q_w(double h) {
-		Calculator c = new Calculator();
-		ArrayList<Double> wList = new ArrayList<Double>();
-		for (double w = 0.01; w <= 2.001; w += 0.01) {
-			double wSum = 0;
-			double counter = 0;
-			for (double theta = 0; theta <= 1.001; theta += 0.1) {
-				System.out.println("\n" + new Date());
-				System.out.println("W = " + w + ". Theta: " + theta);
-				for (double fi = 0; fi < 1; fi += 0.1) {
-
-					if (theta > 0.499 && theta < 0.501)
-						if ((fi == 0) || (fi > 0.499 && fi < 0.501) || (fi > 0.999)) {
-							counter++;
-							continue;
-						}
-
-					c.startVector = new Vector(Math.acos(2 * theta - 1), 2 * Math.PI * fi);
-					Calculator.fieldsList = new EffectiveField();
-					Calculator.fieldsList.add(new Anisotrophia(Math.acos(2 * theta - 1), 2 * Math.PI * fi));
-					Calculator.fieldsList.add(new Lineal(new Vector(1, 0, 0), w, h));
-					c.run();
-					wSum += c.getEnergy();
-					counter++;
-				}
-			}
-			wList.add(wSum / counter);
-			Writer.writeDoubleList(wList, "energy");
-			System.out.println("\n Energy: " + wSum / counter + "\n");
-		}
-	}
 
 
 
 	public static void oneParticle(double tetta, double h, double w) {
 
-		Date start = new Date();
-		
-		Calculator.fieldsList = new EffectiveField();
-		Calculator.fieldsList.add(new Anisotrophia(Math.PI * tetta, 0));
-		Calculator.fieldsList.add(new Lineal(new Vector(1, 0, 0), w, h));
-		
+
+
 		Calculator c = new Calculator();
+		c.fieldsList.add(new Anisotrophia(Math.PI * tetta, 0));
+		c.fieldsList.add(new Circular(w, h));
 
 		c.startVector = new Vector(Math.PI * tetta, 0);
-		//c.run(1000, 1000);
-		c.run();
-		System.out.println(c.getEnergy());
-		System.out.println(new Date().getTime() - start.getTime());
+		c.run(1198, 2);
+
+	//	System.out.println(new Date().getTime() - date.getTime());
+
+	//	System.out.println(c.getEnergy());
+		System.out.println(c.lsList.get(c.lsList.size()-1));
+
+		String trackName;
+		if (PeriodCounter.isQ)
+			trackName = "(t= "+ tetta +", h= " + h + ", w= " + w + " (Q))";
+		else
+			trackName = "(t= "+ tetta +", h= " + h + ", w= " + w + ")";
+
+		Writer.writeDoubleList(c.lsList, "Lypunoff");
+		new Draw(c, 0.4 * Math.PI, 0.4 * Math.PI, 0, trackName).drawTraectory(true);
 		
-		String trackName = "(t= "+ tetta +", h= " + h + ", w= " + w + ")";
-		//new Draw(c, 0.4 * Math.PI, 0.4 * Math.PI, 0, "res/" + trackName).drawTraectory(true);
+		System.out.println("Start");
+		Date date = new Date();
+		List<Vector> list = Vector.grammShmidtOrthogonal(c.getArray());
+		System.out.println(list.get(list.size()-1).getX());
+		System.out.println(new Date().getTime() - date.getTime());
+		
+		//DrawComponents.draw(c, "comp. " + trackName);
+		//DrawComponents.normal(c.pc.energyList, "energ. " + trackName);
+
 	}
 
 
@@ -108,7 +93,7 @@ public class Launcher {
 						trackName = "Track: (t: "+ tetta +", h: " + h + ", w: " + w + ")";
 
 
-					new Draw(c, 0.4 * Math.PI, 0.4 * Math.PI, 0, "res/" + trackName).drawTraectory(true);
+					new Draw(c, 0.4 * Math.PI, 0.4 * Math.PI, 0, trackName).drawTraectory(true);
 					//DrawComponents.draw(c, "comp. " + trackName);
 					//DrawComponents.normal(c.pc.energyList, "energ. " + trackName);
 
