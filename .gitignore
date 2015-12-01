@@ -1,7 +1,7 @@
 #Don't commit IDEA files
 *.iml
 .idea/
-
+*.txt
 #Don't commit logs
 *.log*
 

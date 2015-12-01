@@ -1,11 +1,8 @@
 package main;
 
-import java.util.*;
-
-import main.Calculator;
-import main.Vector;
-import main.fields.Circular;
 import main.fields.Lineal;
+
+import java.util.LinkedList;
 
 public class PeriodCounter {
 
@@ -18,7 +15,7 @@ public class PeriodCounter {
 	private boolean isBegin = false;
 
 	private double time;
-	public LinkedList<Vector> list = new LinkedList<Vector>();
+	//public LinkedList<Vector> list = new LinkedList<Vector>(); //TODO return for drawing
 
 	public LinkedList<Double> energyList = new LinkedList<Double>();
 
@@ -44,10 +41,10 @@ public class PeriodCounter {
 
 
 		time += dt;
-		list.add(c.M.clone());
+		//list.add(c.M.clone());
 		isNowInside = isDotNearDot(c.M, startDot);
 		raiseEnergy(c);
-		energyList.add(getEnergy());//TODO
+		energyList.add(getEnergy());
 
 		if (isNowInside) {
 			if (!isLastInside) {
@@ -70,6 +67,12 @@ public class PeriodCounter {
 	private boolean isGrow;
 	private boolean isStartWrite = false;
 
+
+	/**
+	 *
+	 * Algorithm for finding period between minimum and maximum of some track
+	 *
+	 * */
 	private void move2(Calculator c) {
 
 		if (!isBegin) {
@@ -93,18 +96,24 @@ public class PeriodCounter {
 			if (!isStartWrite)
 				isStartWrite = true;
 			else {
-				counter = LAPS;//TODO exit
+				counter = LAPS;
 				System.out.println("Q");
 			}
 		}
 
 		if 	(isStartWrite) {
-			list.add(c.M.clone());
+			//list.add(c.M.clone());
 			raiseEnergy(c);
 		}
 
 		isGrow = z2 > z1;
 
+	}
+
+	private void move3(Calculator c) {
+		raiseEnergy(c);
+		if (c.t > 1.1 * MAX_PERIOD)
+			counter = LAPS;
 	}
 
 
@@ -115,7 +124,7 @@ public class PeriodCounter {
 		isLastInside = true;
 		time = 0;
 		dt = c.dt;
-		list = new LinkedList<Vector>();
+		//list = new LinkedList<Vector>();//TODO
 		
 		
 		
@@ -150,7 +159,7 @@ public class PeriodCounter {
 
 	public void update(Calculator c) {
 		if (isQ)
-			move2(c);
+			move3(c);
 		else
 			move(c);
 	}
@@ -170,7 +179,7 @@ public class PeriodCounter {
 		time = 0;
 		isQ = false;
 		isStartWrite = false;
-		list = new LinkedList<Vector>();
+		//list = new LinkedList<Vector>();//TODO
 		energyList = new LinkedList<Double>();
 	}
 }

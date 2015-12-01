@@ -1,11 +1,11 @@
 package main;
 
+import main.fields.Anisotrophia;
+import main.fields.EffectiveField;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-
-import main.fields.Anisotrophia;
-import main.fields.EffectiveField;
 
 public class Calculator {
 
@@ -93,8 +93,7 @@ public class Calculator {
 			if (pc.isOver())
 				break;
 		}
-		for (Vector vector : pc.list)
-			array.add(vector);
+	//	for (Vector vector : pc.list)			array.add(vector);//TODO drawing
 	}
 
 

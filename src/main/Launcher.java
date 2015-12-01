@@ -1,22 +1,26 @@
 package main;
 
-import java.util.*;
-
-import painting.Draw;
-import painting.CreateGIF;
-import painting.Draw;
-import painting.DrawComponents;
 import main.fields.Anisotrophia;
 import main.fields.Circular;
 import main.fields.EffectiveField;
-import main.fields.Impuls;
 import main.fields.Lineal;
+import painting.Draw;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Launcher {
 
 	public static void main(String...strings) {
-	
-		double h = 0.3;
+
+		//oneParticle(0, 0.3, 0.7);
+		Q_w(0.05);
+	}
+
+
+	public static void Q_w(double h) {
 		Calculator c = new Calculator();
 		ArrayList<Double> wList = new ArrayList<Double>();
 		for (double w = 0.01; w <= 2.001; w += 0.01) {
@@ -25,7 +29,14 @@ public class Launcher {
 			for (double theta = 0; theta <= 1.001; theta += 0.1) {
 				System.out.println("\n" + new Date());
 				System.out.println("W = " + w + ". Theta: " + theta);
-				for (double fi = 0; fi <= 1.001; fi += 0.1) {
+				for (double fi = 0; fi < 1; fi += 0.1) {
+
+					if (theta > 0.499 && theta < 0.501)
+						if ((fi == 0) || (fi > 0.499 && fi < 0.501) || (fi > 0.999)) {
+							counter++;
+							continue;
+						}
+
 					c.startVector = new Vector(Math.acos(2 * theta - 1), 2 * Math.PI * fi);
 					Calculator.fieldsList = new EffectiveField();
 					Calculator.fieldsList.add(new Anisotrophia(Math.acos(2 * theta - 1), 2 * Math.PI * fi));
@@ -36,13 +47,10 @@ public class Launcher {
 				}
 			}
 			wList.add(wSum / counter);
+			Writer.writeDoubleList(wList, "energy");
 			System.out.println("\n Energy: " + wSum / counter + "\n");
 		}
-		
-		Writer.writeDoubleList(wList, "energy");
-			
 	}
-
 
 
 
@@ -63,7 +71,7 @@ public class Launcher {
 		System.out.println(new Date().getTime() - start.getTime());
 		
 		String trackName = "(t= "+ tetta +", h= " + h + ", w= " + w + ")";
-		new Draw(c, 0 * Math.PI, 0 * Math.PI, 0, "res/" + trackName).drawTraectory(true);
+		//new Draw(c, 0.4 * Math.PI, 0.4 * Math.PI, 0, "res/" + trackName).drawTraectory(true);
 	}
 
 
