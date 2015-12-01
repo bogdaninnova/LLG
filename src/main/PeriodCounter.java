@@ -27,7 +27,7 @@ public class PeriodCounter {
 	private double energy = 0;
 	private double steps = 0;
 
-	private static final double MAX_PERIOD = 20000;
+	private static final double MAX_PERIOD = 10000;
 
 	public static boolean isQ = false;
 
