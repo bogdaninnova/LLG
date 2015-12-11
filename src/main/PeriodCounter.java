@@ -15,7 +15,7 @@ public class PeriodCounter {
 	private boolean isBegin = false;
 
 	private double time;
-	//public LinkedList<Vector> list = new LinkedList<Vector>(); //TODO return for drawing
+	public LinkedList<Vector> list = new LinkedList<Vector>();
 
 	public LinkedList<Double> energyList = new LinkedList<Double>();
 
@@ -27,10 +27,9 @@ public class PeriodCounter {
 	private double energy = 0;
 	private double steps = 0;
 
-	private static final double MAX_PERIOD = 10000;
+	public double MAX_PERIOD;
 
 	public static boolean isQ = false;
-
 
 	private void move(Calculator c) {
 
@@ -41,7 +40,7 @@ public class PeriodCounter {
 
 
 		time += dt;
-		//list.add(c.M.clone());
+		list.add(c.M.clone());
 		isNowInside = isDotNearDot(c.M, startDot);
 		raiseEnergy(c);
 		energyList.add(getEnergy());
@@ -102,7 +101,7 @@ public class PeriodCounter {
 		}
 
 		if 	(isStartWrite) {
-			//list.add(c.M.clone());
+			list.add(c.M.clone());
 			raiseEnergy(c);
 		}
 
@@ -112,7 +111,8 @@ public class PeriodCounter {
 
 	private void move3(Calculator c) {
 		raiseEnergy(c);
-		if (c.t > 1.1 * MAX_PERIOD)
+		list.add(c.M.clone());
+		if (c.t > 2 * MAX_PERIOD)
 			counter = LAPS;
 	}
 
@@ -124,11 +124,11 @@ public class PeriodCounter {
 		isLastInside = true;
 		time = 0;
 		dt = c.dt;
-		//list = new LinkedList<Vector>();//TODO
+		list = new LinkedList<Vector>();
 		
 		
 		
-		energyList = new LinkedList<Double>();//TODO
+		energyList = new LinkedList<Double>();
 		steps = 0;
 		energy = 0;
 	}
@@ -168,7 +168,7 @@ public class PeriodCounter {
 		return counter == LAPS;
 	}
 
-	public void reset() {
+	public void reset(double w) {
 		z1 = 2;
 		z2 = 2;
 		counter = 0;
@@ -179,7 +179,25 @@ public class PeriodCounter {
 		time = 0;
 		isQ = false;
 		isStartWrite = false;
-		//list = new LinkedList<Vector>();//TODO
+		list = new LinkedList<Vector>();
 		energyList = new LinkedList<Double>();
+		MAX_PERIOD = maxWaiting2period(w);
+	}
+
+
+	private static double maxWaiting2period(double w) {
+		if (w > 1)
+			return 4096 / w;
+		if (w > 0.5)
+			return 2048 / w;
+		if (w > 0.25)
+			return 1024 / w;
+		if (w > 0.0625)
+			return 512 / w;
+		if (w > 0.03125)
+			return 128 / w;
+		if (w > 0.015625)
+			return 64 / w;
+		return 32 / w;
 	}
 }

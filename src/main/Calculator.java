@@ -28,8 +28,12 @@ public class Calculator {
 
 	
 	public Vector startVector = new Vector(0, 0, 1);
-	
-	
+
+	public double w;
+
+
+
+
 	public Calculator() {
 		if (!fieldsList.isContain(Anisotrophia.class))
 			setBeginningLocation(new Vector(0, 0));
@@ -45,7 +49,7 @@ public class Calculator {
 
 
 	private void update() {
-		pc.reset();
+		pc.reset(w);
 		array = new LinkedList<Vector>();
 		t = 0;
 		setBeginningLocation(startVector);
@@ -93,7 +97,8 @@ public class Calculator {
 			if (pc.isOver())
 				break;
 		}
-	//	for (Vector vector : pc.list)			array.add(vector);//TODO drawing
+		for (Vector vector : pc.list)
+			array.add(vector);
 	}
 
 

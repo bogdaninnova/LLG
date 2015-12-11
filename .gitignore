@@ -4,7 +4,7 @@
 *.txt
 #Don't commit logs
 *.log*
-
+*.PNG
 #Don't commit Java class files and build artifacts
 target/
 bin/

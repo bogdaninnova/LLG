@@ -1,41 +1,49 @@
 package main;
 
 import main.fields.Anisotrophia;
-import main.fields.Circular;
 import main.fields.EffectiveField;
 import main.fields.Lineal;
 import painting.Draw;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 
 public class Launcher {
 
 	public static void main(String...strings) {
 
-		Q_w(0.3);
+//		oneParticle(0, 0, 0.3, 2);
+
+		Q_w(0.05, 0.01, 2);
+		Q_w(0.1, 0.01, 2);
+		Q_w(0.15, 0.01, 2);
+		Q_w(0.2, 0.01, 2);
+		Q_w(0.25, 0.01, 2);
+		Q_w(0.3, 0.01, 2);
+
+
+
+
 
 	}
 
-	public static void Q_w(double h) {
+	public static void Q_w(double h, double w1, double w2) {
 		Calculator c = new Calculator();
 		ArrayList<Double> wList = new ArrayList<Double>();
-		for (double w = 0.1; w <= 2.001; w += 0.1) {
+		for (double w = w1; w <= w2; w += 0.01) {
 			double wSum = 0;
 			double counter = 0;
-			for (double theta = 0; theta <= 1.001; theta += 0.1) {
+			for (double theta = 0; theta <= 1.001; theta += 0.05) {
 				System.out.println("\n" + new Date());
-				System.out.println("W = " + w + ". Theta: " + theta);
-				for (double fi = 0; fi < 1; fi += 0.1) {
+				System.out.println("h = " + h + ". W = " + w + ". Theta: " + theta);
+				for (double fi = 0; fi < 0.999; fi += 0.05) {
 
 					if (theta > 0.499 && theta < 0.501)
 						if ((fi == 0) || (fi > 0.499 && fi < 0.501) || (fi > 0.999)) {
 							counter++;
 							continue;
 						}
-
+					c.w = w;
 					c.startVector = new Vector(Math.acos(2 * theta - 1), 2 * Math.PI * fi);
 					Calculator.fieldsList = new EffectiveField();
 					Calculator.fieldsList.add(new Anisotrophia(Math.acos(2 * theta - 1), 2 * Math.PI * fi));
@@ -46,13 +54,13 @@ public class Launcher {
 				}
 			}
 			wList.add(wSum / counter);
-			Writer.writeDoubleList(wList, "10Energy h = " + h);
+			Writer.writeDoubleList(wList, "Energy h = " + h + ". From w = " + w1 + " to w = " + w2);
 		}
 	}
 
 
 
-	public static void oneParticle(double tetta, double h, double w) {
+	public static void oneParticle(double tetta, double fi, double h, double w) {
 
 		Date start = new Date();
 
@@ -61,60 +69,15 @@ public class Launcher {
 		Calculator.fieldsList.add(new Lineal(new Vector(1, 0, 0), w, h));
 
 		Calculator c = new Calculator();
-
-		c.startVector = new Vector(Math.PI * tetta, 0);
-		//c.run(1000, 1000);
+		c.w = w;
+		c.startVector = new Vector(Math.PI * tetta, Math.PI * fi);
+		//c.run(15000, 1000);
 		c.run();
 		System.out.println(c.getEnergy());
 		System.out.println(new Date().getTime() - start.getTime());
 
 		String trackName = "(t= "+ tetta +", h= " + h + ", w= " + w + ")";
-		new Draw(c, 0 * Math.PI, 0 * Math.PI, 0, "res/" + trackName).drawTraectory(true);
-	}
-
-
-
-
-	public static void longStory() {
-		Calculator c = new Calculator();
-		c.fieldsList.add(new Anisotrophia(0, 0));
-		c.fieldsList.add(new Circular(0, 0));
-
-
-		for (double tetta = 0.1; tetta < 0.101; tetta += 0.1) {
-			((Anisotrophia) c.fieldsList.get(Anisotrophia.class)).
-					setVector(new Vector(Math.PI * tetta, 0));
-
-
-			for (double h = 0.25; h <= 0.251; h += 0.05) {
-				List<Double> list = new LinkedList<Double>();
-				for (double w = 0.95; w <= 1.201; w += 0.01) {
-					System.out.println(new Date().toString());
-					System.out.println("Tetta = " + tetta);
-					System.out.println("h = " + h);
-					System.out.println("w = " + w);
-					System.out.println();
-					((Circular) c.fieldsList.get(Circular.class)).setNewData(w, h);
-					c.run();
-					list.add(c.getEnergy());
-
-
-					String trackName;
-					if (PeriodCounter.isQ)
-						trackName = "Track: (t: "+ tetta +", h: " + h + ", w: " + w + " (Q))";
-					else
-						trackName = "Track: (t: "+ tetta +", h: " + h + ", w: " + w + ")";
-
-
-					new Draw(c, 0.4 * Math.PI, 0.4 * Math.PI, 0, "res/" + trackName).drawTraectory(true);
-					//DrawComponents.draw(c, "comp. " + trackName);
-					//DrawComponents.normal(c.pc.energyList, "energ. " + trackName);
-
-
-				}
-				Writer.writeDoubleList(list, "Tetta = " + tetta + ", (h = " + h +")");
-			}
-		}
+		new Draw(c, 0.4 * Math.PI, 0.4 * Math.PI, 0, "res/" + trackName).drawTraectory(true);
 	}
 
 }
