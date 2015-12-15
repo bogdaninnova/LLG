@@ -25,6 +25,7 @@ public class PeriodCounter {
 	private static final int LAPS = 2;
 
 	private double energy = 0;
+	private Vector M_aver = new Vector();
 	private double steps = 0;
 
 	public double MAX_PERIOD;
@@ -131,6 +132,7 @@ public class PeriodCounter {
 		energyList = new LinkedList<Double>();
 		steps = 0;
 		energy = 0;
+		M_aver = new Vector();
 	}
 
 	private static boolean isDotNearDot(Vector dot1, Vector dot2) {
@@ -142,6 +144,7 @@ public class PeriodCounter {
 
 	private void raiseEnergy(Calculator c) {
 		energy += c.fieldsList.getHeff(c.M, c.t).dotProduct(c.dM) / c.dt;
+		M_aver = M_aver.plus(c.M);
 		steps++;
 	}
 
@@ -150,6 +153,13 @@ public class PeriodCounter {
 			return 0;
 		else
 			return energy / steps;
+	}
+
+	public Vector getM_aver() {
+		if (steps == 0)
+			return new Vector();
+		else
+			return M_aver.multiply(1 / steps);
 	}
 
 
@@ -174,6 +184,7 @@ public class PeriodCounter {
 		counter = 0;
 		isBegin = false;
 		energy = 0;
+		M_aver = new Vector();
 		steps = 0;
 		isLastInside = true;
 		time = 0;

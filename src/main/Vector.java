@@ -108,7 +108,10 @@ public class Vector {
 		}
 		return ortList;
 	}
-	
+
+	public String toString() {
+		return "(x:" + x + ";y=" + y + ";z=" + z + ")";
+	}
 	
 	
 	

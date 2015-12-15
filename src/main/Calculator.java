@@ -46,7 +46,9 @@ public class Calculator {
 		return pc.getEnergy();
 	}
 
-
+	public Vector getM_aver() {
+		return pc.getM_aver();
+	}
 
 	private void update() {
 		pc.reset(w);

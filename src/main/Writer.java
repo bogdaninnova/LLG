@@ -1,9 +1,12 @@
 package main;
 
 
-import java.io.*;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
 
 public class Writer {
 
@@ -16,7 +19,8 @@ public class Writer {
 		try {
 			FileWriter writer = new FileWriter(file);
 
-			while (iter.hasNext()) writer.append(iter.next() + "\r\n");
+			while (iter.hasNext())
+				writer.append(iter.next() + "\r\n");
 			
 			writer.flush();
 		} catch (IOException e) {
@@ -44,11 +48,11 @@ public class Writer {
 	@SuppressWarnings("resource")
 	public static void writeTraectorysCoordinates(List<Vector> list, String name) {
 		
-		String tittle = name + new SimpleDateFormat("yyyy-MM-dd HH-mm-ss.SSS").format(new Date());
+		//String tittle = name + new SimpleDateFormat("yyyy-MM-dd HH-mm-ss.SSS").format(new Date());
 		
-		File xFile = new File("x_" + tittle + ".txt");
-		File yFile = new File("y_" + tittle + ".txt");
-		File zFile = new File("z_" + tittle + ".txt");
+		File xFile = new File("x_" + name + ".txt");
+		File yFile = new File("y_" + name + ".txt");
+		File zFile = new File("z_" + name + ".txt");
 		
 		ListIterator<Vector> iter = list.listIterator();
 		
@@ -61,9 +65,9 @@ public class Writer {
 			
 		while (iter.hasNext()){
 				dot = iter.next();
-				xWriter.append(Double.toString(dot.getX()).replace(',', '.') + "\r\n");
-				yWriter.append(Double.toString(dot.getY()).replace(',', '.') + "\r\n");
-				zWriter.append(Double.toString(dot.getZ()).replace(',', '.') + "\r\n");
+				xWriter.append(dot.getX() + "\r\n");
+				yWriter.append(dot.getY() + "\r\n");
+				zWriter.append(dot.getZ() + "\r\n");
 			}
 			xWriter.flush();
 			yWriter.flush();
