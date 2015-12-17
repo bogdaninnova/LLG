@@ -15,7 +15,7 @@ public class Writer {
 		
 		ListIterator<Double> iter = averrageList.listIterator();
 		
-		File file = new File("res/" + name + ".txt");
+		File file = new File(name + ".txt");
 		try {
 			FileWriter writer = new FileWriter(file);
 
@@ -50,9 +50,9 @@ public class Writer {
 		
 		//String tittle = name + new SimpleDateFormat("yyyy-MM-dd HH-mm-ss.SSS").format(new Date());
 		
-		File xFile = new File("x_" + name + ".txt");
-		File yFile = new File("y_" + name + ".txt");
-		File zFile = new File("z_" + name + ".txt");
+		File xFile = new File(name + "_x.txt");
+		File yFile = new File(name + "_y.txt");
+		File zFile = new File(name + "_z.txt");
 		
 		ListIterator<Vector> iter = list.listIterator();
 		

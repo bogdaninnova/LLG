@@ -22,7 +22,7 @@ public class PeriodCounter {
 	private double omega;
 	private double dt;
 
-	private static final int LAPS = 2;
+	private static final int LAPS = 5;
 
 	private double energy = 0;
 	private Vector M_aver = new Vector();
@@ -60,6 +60,7 @@ public class PeriodCounter {
 		if (c.t > MAX_PERIOD) {
 			reset(c);
 			isQ = true;
+			System.out.println("Q");
 		}
 	}
 
