@@ -1,5 +1,7 @@
 package main;
 
+import bulkFileEditing.FolderEditor;
+import bulkFileEditing.TextWriter;
 import main.fields.Anisotrophia;
 import main.fields.EffectiveField;
 import main.fields.Lineal;
@@ -15,6 +17,7 @@ public class Launcher {
 
 	public static void main(String...strings) {
 
+		FolderEditor.rename("h = 0.05");
 
 
 	}
@@ -41,8 +44,8 @@ public class Launcher {
 			Object[] result = oneParticle(0, 0, h, w, track0Name);
 			e0List.add((double)result[0]);
 			m0List.add((Vector) result[1]);
-			Writer.writeDoubleList(e0List, anis0Path + "/Energy");
-			Writer.writeTraectorysCoordinates(m0List, anis0Path + "/Average M");
+			TextWriter.writeDoubleList(e0List, anis0Path + "/Energy");
+			TextWriter.writeTraectorysCoordinates(m0List, anis0Path + "/Average M");
 		}
 
 		for (double fi = 0; fi < 0.5; fi = round(fi + angleStep, 2))
@@ -62,8 +65,8 @@ public class Launcher {
 					Object[] result = oneParticle(theta, fi, h, w, trackName);
 					eList.add((double)result[0]);
 					mList.add((Vector) result[1]);
-					Writer.writeDoubleList(eList, anisPath + "/Energy");
-					Writer.writeTraectorysCoordinates(mList, anisPath + "/Average M");
+					TextWriter.writeDoubleList(eList, anisPath + "/Energy");
+					TextWriter.writeTraectorysCoordinates(mList, anisPath + "/Average M");
 				}
 			}
 
@@ -78,8 +81,8 @@ public class Launcher {
 			Object[] result = oneParticle(1, 0, h, w, track1Name);
 			e1List.add((double)result[0]);
 			m1List.add((Vector) result[1]);
-			Writer.writeDoubleList(e1List, anis1Path + "/Energy");
-			Writer.writeTraectorysCoordinates(m1List, anis1Path + "/Average M");
+			TextWriter.writeDoubleList(e1List, anis1Path + "/Energy");
+			TextWriter.writeTraectorysCoordinates(m1List, anis1Path + "/Average M");
 		}
 	}
 
@@ -116,8 +119,8 @@ public class Launcher {
 			mList.add(m_aver.multiply(1 / counter));
 			wList.add(wSum / counter);
 
-			Writer.writeDoubleList(wList, "Energy h = " + h + ". From w = " + w1 + " to w = " + w2);
-			Writer.writeTraectorysCoordinates(mList, "M_aver h = " + h + ". From w = " + w1 + " to w = " + w2);
+			TextWriter.writeDoubleList(wList, "Energy h = " + h + ". From w = " + w1 + " to w = " + w2);
+			TextWriter.writeTraectorysCoordinates(mList, "M_aver h = " + h + ". From w = " + w1 + " to w = " + w2);
 		}
 	}
 
