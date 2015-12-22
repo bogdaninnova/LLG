@@ -15,20 +15,16 @@ public class Launcher {
 
 	public static void main(String...strings) {
 
-//		oneParticle(0.5, 0.2, 0.05, 1);
 
-		character(0.1);
-
-
-//		Q_w(0.3, 0.05, 0.75);
 
 	}
 
 
 	public static void character (double h) {
 
+		double angleStep = 0.05;
 
-		String destination = "res";
+		String destination = "res/angle_step = 0.05";
 		createFolder(destination);
 		String path = destination + "/h = " + h;
 		String track = "track";
@@ -49,8 +45,8 @@ public class Launcher {
 			Writer.writeTraectorysCoordinates(m0List, anis0Path + "/Average M");
 		}
 
-		for (double fi = 0; fi < 0.5; fi = round(fi + 0.1, 1))
-			for (double theta = 0.1; theta < 1; theta = round(theta + 0.1, 1)) {
+		for (double fi = 0; fi < 0.5; fi = round(fi + angleStep, 2))
+			for (double theta = angleStep; theta < 1; theta = round(theta + angleStep, 2)) {
 				System.out.println(new Date());
 				String anisPath = path + "/h = " + h + ";theta=" + theta + ";fi=" + fi;
 				createFolder(anisPath);
@@ -77,7 +73,7 @@ public class Launcher {
 		createFolder(anis1Path);
 		createFolder(anis1Path + "/" + track);
 		for (double w = 0.01; w <= 2; w = (round(w + 0.01, 2))) {
-			System.out.println("h = " + h + "theta = " + 1 + ", fi = " + 0 + ", w = " + w);
+			System.out.println("h = " + h + "theta = " + 1.0 + ", fi = " + 0.0 + ", w = " + w);
 			String track1Name = anis1Path + "/" + track + "/h = "+ h +", theta = " + 1.0 + ", fi = " + 0.0 + ", w = " + w;
 			Object[] result = oneParticle(1, 0, h, w, track1Name);
 			e1List.add((double)result[0]);
