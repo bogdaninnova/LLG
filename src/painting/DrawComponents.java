@@ -10,8 +10,6 @@ import java.util.*;
 import main.Calculator;
 import main.Constants;
 import main.Vector;
-import main.Writer;
-import main.fields.Field;
 import main.fields.Impuls;
 
 public class DrawComponents {

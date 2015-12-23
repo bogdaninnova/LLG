@@ -78,7 +78,7 @@ public class DrawQW {
     }
 
 
-    private ArrayList<Double> readDoubleListList(String path) throws NumberFormatException, IOException {
+    public static ArrayList<Double> readDoubleListList(String path) throws NumberFormatException, IOException {
 
         BufferedReader in = new BufferedReader(new FileReader(new File(path)));
         ArrayList<Double> list = new ArrayList<Double>();
