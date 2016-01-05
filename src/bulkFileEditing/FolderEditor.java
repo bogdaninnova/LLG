@@ -33,6 +33,43 @@ public class FolderEditor {
         }
     }
 
+    public static void deleteFiles(String path) {
+
+        File folder = new File(path);
+        String[] names = folder.list();
+
+        for(String name : names) {
+            File folder2 = new File(path + "/" + name);
+            String[] cons = folder2.list();
+            for(String c : cons) {
+
+                File file = new File(path + "/" + name + "/" + c);
+                String[] in = file.list();
+                for(String c2 : in)
+                    if (c2.equals("track")) {
+                        System.out.println(path + "/" + name + "/" + c + "/" + c2);
+                        File deleteFile = new File(path + "/" + name + "/" + c + "/" + c2);
+                        deleteDirectory(deleteFile);
+                    }
+            }
+
+        }
+    }
+
+    private static boolean deleteDirectory(File directory) {
+        if (directory.exists()){
+            File[] files = directory.listFiles();
+            if (null != files)
+                for (File file : files)
+                    if(file.isDirectory())
+                        deleteDirectory(file);
+                    else
+                        file.delete();
+        }
+        return directory.delete();
+    }
+
+
     public static void copyFolder(String hFolder) {
         String path = "txts/angle_step = 0.05/" + hFolder;
 
@@ -50,7 +87,6 @@ public class FolderEditor {
                         e.printStackTrace();
                     }
                 }
-
         }
     }
 

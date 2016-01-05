@@ -3,10 +3,7 @@ package bulkFileEditing;
 import painting.Draw;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
@@ -28,10 +25,7 @@ public class DrawQW {
             list = readDoubleListList(path);
         } catch (NumberFormatException e) {
             e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-
         wright(list, g, Color.BLACK);
     }
 
@@ -78,19 +72,27 @@ public class DrawQW {
     }
 
 
-    private ArrayList<Double> readDoubleListList(String path) throws NumberFormatException, IOException {
+    public static ArrayList<Double> readDoubleListList(String path) {
 
-        BufferedReader in = new BufferedReader(new FileReader(new File(path)));
+        BufferedReader in = null;
+        try {
+            in = new BufferedReader(new FileReader(new File(path)));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
         ArrayList<Double> list = new ArrayList<Double>();
 
         String a;
 
-        while ((a = in.readLine()) != null)
-            list.add(Double.parseDouble(a));
+        try {
+            while ((a = in.readLine()) != null)
+                list.add(Double.parseDouble(a));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         return list;
     }
-
 
 
 

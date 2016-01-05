@@ -1,33 +1,59 @@
 package main;
 
-import bulkFileEditing.FolderEditor;
+import bulkFileEditing.DrawQW;
 import bulkFileEditing.TextWriter;
 import main.fields.Anisotrophia;
 import main.fields.EffectiveField;
 import main.fields.Lineal;
-import painting.Draw;
 
 import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 
 public class Launcher {
 
 	public static void main(String...strings) {
 
-		FolderEditor.rename("h = 0.05");
+	//	averrageComponents("");
 
 
+
+		String path = "C:\\IDEA\\LLG\\res\\angle_step = 0.05\\h = 0.2";
+
+		File folder = new File(path);
+		String[] names = folder.list();
+
+
+		ArrayList<Double> list = new ArrayList<Double>();
+		for (int i = 0; i < 200; i++)
+			list.add(0d);
+		int counter = 0;
+		for(String name : names) {
+			if (name.contains("Aver"))
+				continue;
+			File file = new File(path + "/" + name);
+			String[] cons = file.list();
+			for(String c : cons) {
+
+				if (c.contains("Ene")) {
+					counter++;
+					list = addLists(list, DrawQW.readDoubleListList(path + "/" + name + "/" + c));
+				}
+			}
+
+			TextWriter.writeDoubleList(multiple(list, 1 / (double) counter), "Energy h = 0.2 (2)");
+		}
 	}
 
 
-	public static void character (double h) {
 
-		double angleStep = 0.05;
 
-		String destination = "res/angle_step = 0.05";
+	public static void character(double h) {
+
+		String destination = "res/new";
 		createFolder(destination);
 		String path = destination + "/h = " + h;
 		String track = "track";
@@ -48,8 +74,8 @@ public class Launcher {
 			TextWriter.writeTraectorysCoordinates(m0List, anis0Path + "/Average M");
 		}
 
-		for (double fi = 0; fi < 0.5; fi = round(fi + angleStep, 2))
-			for (double theta = angleStep; theta < 1; theta = round(theta + angleStep, 2)) {
+		for (double fi = 1.09955742875; fi <= 2 * Math.PI; fi += (Math.PI/20d))
+			for (double theta = Math.PI / 40d; theta <= Math.PI; theta += (Math.PI / 40d)) {
 				System.out.println(new Date());
 				String anisPath = path + "/h = " + h + ";theta=" + theta + ";fi=" + fi;
 				createFolder(anisPath);
@@ -65,8 +91,8 @@ public class Launcher {
 					Object[] result = oneParticle(theta, fi, h, w, trackName);
 					eList.add((double)result[0]);
 					mList.add((Vector) result[1]);
-					TextWriter.writeDoubleList(eList, anisPath + "/Energy");
-					TextWriter.writeTraectorysCoordinates(mList, anisPath + "/Average M");
+					TextWriter.writeDoubleList(eList, anisPath + "/h = " + h + ", theta = " + theta + ", fi = " + fi + " Energy");
+					TextWriter.writeTraectorysCoordinates(mList, anisPath + "/h = " + h + ", theta = " + theta + ", fi = " + fi + " M");
 				}
 			}
 
@@ -142,9 +168,9 @@ public class Launcher {
 		//c.run(800, 500);
 		c.run();
 
-		new Draw(c, 0.4 * Math.PI, 0.4 * Math.PI, 0, path).drawTraectory(true);
+		//new Draw(c, 0.4 * Math.PI, 0.4 * Math.PI, 0, path).drawTraectory(true);
 
-		Object[] result = {c.getEnergy(), c.getM_aver()};
+		Object[] result = {c.getEnergy() * Math.sin(theta), c.getM_aver().multiply(Math.sin(theta))};
 
 		return result;
 	}
@@ -165,6 +191,84 @@ public class Launcher {
 			theDir.mkdir();
 		}
 	}
+
+
+	public static void averrageComponents(String path) throws NumberFormatException {
+		path = "C:\\IDEA\\LLG\\res\\angle_step = 0.05\\h = 0.2";
+		File folder = new File(path);
+		String[] names = folder.list();
+
+
+
+		ArrayList<Double> listX = new ArrayList<Double>();
+		ArrayList<Double> listY = new ArrayList<Double>();
+		ArrayList<Double> listZ = new ArrayList<Double>();
+		for (int i = 0; i < 200; i++) {
+			listX.add(0d);
+			listY.add(0d);
+			listZ.add(0d);
+		}
+		int counter = 39;
+		for(String name : names) {
+			File file = new File(path + "/" + name);
+			String[] cons = file.list();
+			for(String c : cons) {
+
+				if (c.contains("M_x")) {
+					if (c.contains("theta=0.0;") || c.contains("theta=1.0;")) {
+						listX = addLists(listX, multiple(DrawQW.readDoubleListList(path + "/" + name + "/" + c), 20));
+					} else {
+						listX = addLists(listX, DrawQW.readDoubleListList(path + "/" + name + "/" + c));
+					}
+				}
+				if (c.contains("M_y")) {
+					if (c.contains("theta=0.0;") || c.contains("theta=1.0;")) {
+						listY = addLists(listY, multiple(DrawQW.readDoubleListList(path + "/" + name + "/" + c), 20));
+					} else {
+						listY = addLists(listY, DrawQW.readDoubleListList(path + "/" + name + "/" + c));
+					}
+				}
+				if (c.contains("M_z")) {
+					counter++;
+					if (c.contains("theta=0.0;") || c.contains("theta=1.0;")) {
+						listZ = addLists(listZ, multiple(DrawQW.readDoubleListList(path + "/" + name + "/" + c), 20));
+					} else {
+						listZ = addLists(listZ, DrawQW.readDoubleListList(path + "/" + name + "/" + c));
+					}
+				}
+
+
+			}
+		}
+		TextWriter.writeDoubleList(multiple(listX, 1 / (double) counter), "h02 Averrage X");
+		TextWriter.writeDoubleList(multiple(listY, 1 / (double) counter), "h02 Averrage Y");
+		TextWriter.writeDoubleList(multiple(listZ, 1 / (double) counter), "h02 Averrage Z");
+
+	}
+
+
+
+	private static ArrayList<Double> multiple(ArrayList<Double> list, double num) {
+		ArrayList<Double> newList = new ArrayList<Double>();
+		Iterator<Double> iter = list.iterator();
+		while (iter.hasNext())
+			newList.add(iter.next() * num);
+		return newList;
+	}
+
+
+	private static ArrayList<Double> addLists(ArrayList<Double> list1, ArrayList<Double> list2) {
+
+		if (list1.size() != list2.size())
+			return null;
+		ArrayList<Double> list = new ArrayList<Double>();
+		Iterator<Double> iter1 = list1.iterator();
+		Iterator<Double> iter2 = list2.iterator();
+		while (iter1.hasNext())
+			list.add(iter1.next() + iter2.next());
+		return list;
+	}
+
 
 
 }
