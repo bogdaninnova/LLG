@@ -1,5 +1,6 @@
 package main;
 
+import main.fields.Circular;
 import main.fields.Lineal;
 
 import java.util.LinkedList;
@@ -121,7 +122,7 @@ public class PeriodCounter {
 
 	private void reset(Calculator c) {
 		counter = 0;
-		omega = ((Lineal) c.fieldsList.get(Lineal.class)).getW();//TODO
+		omega = ((Circular) c.fieldsList.get(Circular.class)).getW();//TODO
 		startDot = c.M.clone();
 		isLastInside = true;
 		time = 0;
