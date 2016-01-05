@@ -1,6 +1,6 @@
 package main;
 
-import bulkFileEditing.FolderEditor;
+import bulkFileEditing.DrawQW;
 import bulkFileEditing.TextWriter;
 import main.fields.Anisotrophia;
 import main.fields.EffectiveField;
@@ -12,13 +12,11 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 
 public class Launcher {
 
 	public static void main(String...strings) {
-
-		FolderEditor.rename("h = 0.05");
-
 
 	}
 
@@ -48,9 +46,11 @@ public class Launcher {
 			TextWriter.writeTraectorysCoordinates(m0List, anis0Path + "/Average M");
 		}
 
-		for (double fi = 0; fi < 0.5; fi = round(fi + angleStep, 2))
+		for (double fi = 0; fi < 1; fi = round(fi + angleStep, 2))
 			for (double theta = angleStep; theta < 1; theta = round(theta + angleStep, 2)) {
 				System.out.println(new Date());
+				if ((theta == 0.5) && (fi == 0))
+					continue;
 				String anisPath = path + "/h = " + h + ";theta=" + theta + ";fi=" + fi;
 				createFolder(anisPath);
 				createFolder(anisPath + "/" + track);
@@ -58,10 +58,7 @@ public class Launcher {
 				ArrayList<Vector> mList = new ArrayList<Vector>();
 				for (double w = 0.01; w <= 2; w = (round(w + 0.01, 2))) {
 					System.out.println("h = " + h + "theta = " + theta + ", fi = " + fi + ", w = " + w);
-					if ((theta == 0.5) && (fi == 0))
-						continue;
 					String trackName = anisPath + "/" + track + "/h = "+ h +", theta = " + theta + ", fi = " + fi + ", w = " + w;
-
 					Object[] result = oneParticle(theta, fi, h, w, trackName);
 					eList.add((double)result[0]);
 					mList.add((Vector) result[1]);
@@ -166,5 +163,94 @@ public class Launcher {
 		}
 	}
 
+	public static void averrageComponents(double h) throws NumberFormatException {
+
+		//System.out.println(hFolder);
+		String path = "res\\plain\\h = " + h;
+
+		File folder = new File(path);
+		String[] names = folder.list();
+
+		ArrayList<Double> listX = new ArrayList<Double>();
+		ArrayList<Double> listY = new ArrayList<Double>();
+		ArrayList<Double> listZ = new ArrayList<Double>();
+		ArrayList<Double> listE = new ArrayList<Double>();
+		for (int i = 0; i < 200; i++) {
+			listX.add(0d);
+			listY.add(0d);
+			listZ.add(0d);
+			listE.add(0d);
+		}
+		int counter = 40;
+		System.out.println();
+		for(String name : names) {
+			File file = new File(path + "/" + name);
+			String[] cons = file.list();
+			for(String c : cons) {
+
+				if (c.contains("M_x")) {
+					if (c.contains("theta=0.0;") || c.contains("theta=1.0;")) {
+						listX = addLists(listX, multiple(DrawQW.readDoubleListList(path + "/" + name + "/" + c), 20));
+					} else {
+						listX = addLists(listX, DrawQW.readDoubleListList(path + "/" + name + "/" + c));
+					}
+				}
+				if (c.contains("M_y")) {
+					if (c.contains("theta=0.0;") || c.contains("theta=1.0;")) {
+						listY = addLists(listY, multiple(DrawQW.readDoubleListList(path + "/" + name + "/" + c), 20));
+					} else {
+						listY = addLists(listY, DrawQW.readDoubleListList(path + "/" + name + "/" + c));
+					}
+				}
+				if (c.contains("M_z")) {
+					counter++;
+					if (c.contains("theta=0.0;") || c.contains("theta=1.0;")) {
+						listZ = addLists(listZ, multiple(DrawQW.readDoubleListList(path + "/" + name + "/" + c), 20));
+					} else {
+						listZ = addLists(listZ, DrawQW.readDoubleListList(path + "/" + name + "/" + c));
+					}
+				}
+
+				if (c.contains("Energy")) {
+					counter++;
+					if (c.contains("theta=0.0;") || c.contains("theta=1.0;")) {
+						listE = addLists(listE, multiple(DrawQW.readDoubleListList(path + "/" + name + "/" + c), 20));
+					} else {
+						listE = addLists(listE, DrawQW.readDoubleListList(path + "/" + name + "/" + c));
+					}
+				}
+
+
+			}
+		}
+		TextWriter.writeDoubleList(multiple(listX, 1 / (double) counter), h + " Averrage X");
+		TextWriter.writeDoubleList(multiple(listY, 1 / (double) counter), h + " Averrage Y");
+		TextWriter.writeDoubleList(multiple(listZ, 1 / (double) counter), h + " Averrage Z");
+		TextWriter.writeDoubleList(multiple(listE, 1 / (double) counter), h + " Averrage E");
+
+	}
+
+
+
+	private static ArrayList<Double> multiple(ArrayList<Double> list, double num) {
+		ArrayList<Double> newList = new ArrayList<Double>();
+		Iterator<Double> iter = list.iterator();
+		while (iter.hasNext())
+			newList.add(iter.next() * num);
+		return newList;
+	}
+
+
+	private static ArrayList<Double> addLists(ArrayList<Double> list1, ArrayList<Double> list2) {
+
+		if (list1.size() != list2.size())
+			return null;
+		ArrayList<Double> list = new ArrayList<Double>();
+		Iterator<Double> iter1 = list1.iterator();
+		Iterator<Double> iter2 = list2.iterator();
+		while (iter1.hasNext())
+			list.add(iter1.next() + iter2.next());
+		return list;
+	}
 
 }
