@@ -26,24 +26,23 @@ public class DrawQWSet {
         g.setStroke(new BasicStroke(3));
     }
 
-    public void wright(String... paths) {
-
-        for (String path : paths) {
-            List<Double> list = null;
-            try {
-                set.add(readDoubleListList(path));
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+    public void wright() {
 
         step = (double) sizeW / (double) set.iterator().next().size();
         coefQ = (double) sizeH / getMax(set);
 
         for (ArrayList<Double> list : set)
             wright(list, g, Color.BLACK);
+    }
+
+    public void addTrack(String path) {
+        try {
+            set.add(readDoubleListList(path));
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void save(String name) {
