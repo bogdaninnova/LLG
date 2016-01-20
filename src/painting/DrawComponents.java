@@ -7,8 +7,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.*;
 
-import main.Calculator;
-import main.Constants;
+import main.CartesianCalculation;
 import main.Vector;
 import main.fields.Impuls;
 
@@ -17,7 +16,7 @@ public class DrawComponents {
 	private final static int sizeW = 2000;
 	private final static int sizeH = 1000;
 
-	public static void draw(Calculator c, String name) {
+	public static void draw(CartesianCalculation c, String name) {
 		BufferedImage bi = new BufferedImage(sizeW, sizeH,
 				BufferedImage.TYPE_4BYTE_ABGR);
 		Graphics2D g = Draw.getBackgroundedGraphics2D(bi, Color.white);
@@ -33,8 +32,6 @@ public class DrawComponents {
 		g.drawLine(0, sizeH/2, sizeW, sizeH/2);
 
 		String isTaoSigma = "+";
-		if (Constants.taoSigma == 0)
-			isTaoSigma = "-";
 
 		double h = 0;
 		
@@ -44,7 +41,7 @@ public class DrawComponents {
 		Draw.save(bi, new File(name + ".png"));
 	}
 
-	private static LinkedList<Double> getComponentsList(LinkedList<Vector> list, String coord) {
+	private static LinkedList<Double> getComponentsList(List<Vector> list, String coord) {
 		LinkedList<Double> result = new LinkedList<Double>();
 
 		switch (coord) {

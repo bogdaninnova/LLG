@@ -2,46 +2,26 @@ package main;
 
 import main.fields.Anisotrophia;
 import main.fields.EffectiveField;
+import main.fields.Field;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 
-public class Calculator {
+public class CartesianCalculation extends Calculation {
 
-	public static double t;
-	public static double dt = Constants.dt;
+	
 	public Vector dM = new Vector();
 	public Vector M;
 
-	public List<Double> lsList = new ArrayList<Double>();
-	private List<Double> lfList = new ArrayList<Double>();
-	
-	private int counter = 0;
-	
-	
-	public static EffectiveField fieldsList = new EffectiveField();
+	public EffectiveField fieldsList = new EffectiveField();
 
-	private LinkedList<Vector> array;
 	private PeriodCounter pc = new PeriodCounter();
 	public ArrayList<Double> energyList = new ArrayList<Double>();
 
-	
-	public Vector startVector = new Vector(0, 0, 1);
-
-	public double w;
-
-
-
-
-	public Calculator() {
-		if (!fieldsList.isContain(Anisotrophia.class))
-			setBeginningLocation(new Vector(0, 0));
-		else
-			setBeginningLocation(new Vector(((Anisotrophia) fieldsList.get(Anisotrophia.class)).getAxe()));
+	public CartesianCalculation(Field... fields) {
+		updateFields(fields);
 		update();
 	}
-
+	
 	public double getEnergy() {
 		return pc.getEnergy();
 	}
@@ -51,10 +31,19 @@ public class Calculator {
 	}
 
 	private void update() {
-		pc.reset(w);
-		array = new LinkedList<Vector>();
+		pc.externalReset(this);
+		array = new ArrayList<Vector>();
 		t = 0;
-		setBeginningLocation(startVector);
+	}
+	
+	public void updateFields(Field... fields) {
+		for (Field field : fields)
+			fieldsList.add(field);
+		if (!fieldsList.isContain(Anisotrophia.class))
+			setBeginningLocation(new Vector(0, 0));
+		else
+			setBeginningLocation(new Vector(((Anisotrophia) fieldsList.get(Anisotrophia.class)).getAxe()));
+
 	}
 
 	private void setBeginningLocation(Vector vector) {
@@ -73,24 +62,8 @@ public class Calculator {
 		}
 	}
 	
-	
-//	private void orbitSeparationMethod(Vector M) {
-//		Vector M1 = M.clone();
-//		Vector M2 = Pertrubator.getNewPosition(M1);
-//		M1 = M1.plus(getdM(M1));
-//		M2 = M2.plus(getdM(M2));
-//		lfList.add(Pertrubator.getLcurrent(M1, M2));
-//		double summ = 0;
-//		
-//		for (Double a : lfList)
-//			summ += a;
-//		
-//		lsList.add(summ / lfList.size() / dt);
-//	}
-
 	public void run() {
 		update();
-		setBeginningLocation(startVector);
 		wait(300d);
 		while (true) {
 			iteration();
@@ -103,24 +76,18 @@ public class Calculator {
 			array.add(vector);
 	}
 
-
-
-	private void wait(double waitingTime) {
+	protected void wait(double waitingTime) {
 		while (t < waitingTime) 
 			iteration();
 	}
 
-	public LinkedList<Vector> getArray() {
-		return array;
-	}
-
-	private void iteration() {
+	protected void iteration() {
 		dM = getdM(M);
 		M = M.plus(dM);
 		t += dt;
 	}
 	
-	private static Vector getdM(Vector M) {
+	private Vector getdM(Vector M) {
 		Vector d1, d2, d3, d4;
 		d1 = LLG(M.getX(), M.getY(), M.getZ(), t);
 		d2 = LLG(M.getX()+dt/2*d1.getX(), M.getY()+dt/2*d1.getY(), M.getZ()+dt/2*d1.getZ(), t+dt/2);
@@ -133,16 +100,16 @@ public class Calculator {
 				dt/6 * (d1.getZ() + 2 * d2.getZ() + 2 * d3.getZ() + d4.getZ()));
 	}
 
-	private static Vector LLG(double mx, double my, double mz, double t) {
+	private Vector LLG(double mx, double my, double mz, double t) {
 		Vector M = new Vector(mx, my, mz);
 		Vector MxH = M.crossProduct(fieldsList.getHeff(M, t));
-		Vector a_MxHxH = M.crossProduct(MxH).multiply(Constants.alpha);
+		Vector a_MxHxH = M.crossProduct(MxH).multiply(ALPHA);
 
 		return new Vector(
 				(MxH.getX() + a_MxHxH.getX()),
 				(MxH.getY() + a_MxHxH.getY()),
 				(MxH.getZ() + a_MxHxH.getZ())).
-						multiply(-1 / (1 + Math.pow(Constants.alpha, 2)));
+						multiply(-1 / (1 + Math.pow(ALPHA, 2)));
 	}
 
 }

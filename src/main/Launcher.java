@@ -20,9 +20,48 @@ public class Launcher {
 
 	public static void main(String...strings) {
 		//character(0.3, 0.5, 1);
-		averrageComponents(0.3);
+		//averrageComponents(0.3);
+		
+		double theta = 0 * Math.PI;
+		double fi = 0 * Math.PI;
+		double h = 0.1;
+		double w = 1;
+		String path = "theta=" + theta + ";fi=" + fi + ";h=" + h + ";w=" + w;
+		
+		Date d0 = new Date();
+		
+		CartesianCalculation cc = new CartesianCalculation(new Anisotrophia(theta, fi), new Circular(w, h));
+		cc.run(500, 500);
+		new Draw(cc.getArray(), new Vector(theta, fi), 0.4 * Math.PI, 0.4 * Math.PI, 0, "CC-" + path).drawTraectory(true);
+
+		Date d1 = new Date();
+		System.out.println(d1.getTime()-d0.getTime());
+		
+		SphericalCalculation sc = new SphericalCalculation(theta, fi, h, w);
+		sc.run(500, 500);
+		new Draw(sc.array, new Vector(theta, fi), 0.4 * Math.PI, 0.4 * Math.PI, 0, "SC-" + path).drawTraectory(true);
+	
+		System.out.println(new Date().getTime()-d1.getTime());
 	}
 
+	public static Object[] oneParticle(double theta, double fi, double h, double w, String path) {
+
+		//Date start = new Date();
+
+		CartesianCalculation c = new CartesianCalculation(
+				new Anisotrophia(theta, fi),
+				new Circular(w, h));
+		c.run(500, 500);
+		//c.run();
+
+		new Draw(c.getArray(),
+				((Anisotrophia) c.fieldsList.get(Anisotrophia.class)).getAxe(),
+				0.4 * Math.PI, 0.4 * Math.PI, 0, path).drawTraectory(true);
+
+		Object[] result = {c.getEnergy(), c.getM_aver()};
+
+		return result;
+	}
 
 	public static void bulkWright(String path, String resultName) {
 		DrawQWSet dr = new DrawQWSet();
@@ -42,7 +81,6 @@ public class Launcher {
 		dr.wright();
 		dr.save(resultName);
 	}
-
 
 	public static void character (double h, double fi1, double fi2) {
 
@@ -106,9 +144,8 @@ public class Launcher {
 //		}
 	}
 
-
 	public static void Q_w(double h, double w1, double w2) {
-		Calculator c = new Calculator();
+		CartesianCalculation c = new CartesianCalculation();
 		ArrayList<Double> wList = new ArrayList<Double>();
 		ArrayList<Vector> mList = new ArrayList<Vector>();
 		for (double w = w1; w <= w2; w = round(w + 0.01, 2)) {
@@ -125,11 +162,9 @@ public class Launcher {
 							counter++;
 							continue;
 						}
-					c.w = w;
-					c.startVector = new Vector(Math.acos(2 * theta - 1), 2 * Math.PI * fi);
-					Calculator.fieldsList = new EffectiveField();
-					Calculator.fieldsList.add(new Anisotrophia(Math.acos(2 * theta - 1), 2 * Math.PI * fi));
-					Calculator.fieldsList.add(new Lineal(new Vector(1, 0, 0), w, h));
+					c.updateFields(
+							new Anisotrophia(Math.acos(2 * theta - 1), 2 * Math.PI * fi),
+							new Lineal(new Vector(1, 0, 0), w, h));
 					c.run();
 					wSum += c.getEnergy();
 					m_aver = m_aver.plus(c.getM_aver());
@@ -143,30 +178,6 @@ public class Launcher {
 			TextWriter.writeTraectorysCoordinates(mList, "M_aver h = " + h + ". From w = " + w1 + " to w = " + w2);
 		}
 	}
-
-
-
-	public static Object[] oneParticle(double theta, double fi, double h, double w, String path) {
-
-		//Date start = new Date();
-
-		Calculator.fieldsList = new EffectiveField();
-		Calculator.fieldsList.add(new Anisotrophia(Math.acos(2 * theta - 1), 2 * Math.PI * fi));
-		Calculator.fieldsList.add(new Circular(w, h));
-
-		Calculator c = new Calculator();
-		c.w = w;
-		c.startVector = new Vector(Math.acos(2 * theta - 1), 2 * Math.PI * fi);
-		c.run(0, 500);
-		//c.run();
-
-		new Draw(c, 0.4 * Math.PI, 0.4 * Math.PI, 0, path).drawTraectory(true);
-
-		Object[] result = {c.getEnergy(), c.getM_aver()};
-
-		return result;
-	}
-
 
 	public static double round(double value, int places) {
 		if (places < 0) throw new IllegalArgumentException();

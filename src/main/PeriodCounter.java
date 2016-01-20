@@ -33,7 +33,7 @@ public class PeriodCounter {
 
 	public static boolean isQ = false;
 
-	private void move(Calculator c) {
+	private void move(CartesianCalculation c) {
 
 		if (!isBegin) {
 			isBegin = true;
@@ -75,7 +75,7 @@ public class PeriodCounter {
 	 * Algorithm for finding period between minimum and maximum of some track
 	 *
 	 * */
-	private void move2(Calculator c) {
+	private void move2(CartesianCalculation c) {
 
 		if (!isBegin) {
 			z1 = 2;
@@ -112,7 +112,7 @@ public class PeriodCounter {
 
 	}
 
-	private void move3(Calculator c) {
+	private void move3(CartesianCalculation c) {
 		raiseEnergy(c);
 		list.add(c.M.clone());
 		if (c.t > 2 * MAX_PERIOD)
@@ -120,7 +120,7 @@ public class PeriodCounter {
 	}
 
 
-	private void reset(Calculator c) {
+	private void reset(CartesianCalculation c) {
 		counter = 0;
 		omega = ((Circular) c.fieldsList.get(Circular.class)).getW();//TODO
 		startDot = c.M.clone();
@@ -144,7 +144,7 @@ public class PeriodCounter {
 	}
 
 
-	private void raiseEnergy(Calculator c) {
+	private void raiseEnergy(CartesianCalculation c) {
 		energy += c.fieldsList.getHeff(c.M, c.t).dotProduct(c.dM) / c.dt;
 		M_aver = M_aver.plus(c.M);
 		steps++;
@@ -169,7 +169,7 @@ public class PeriodCounter {
 		return counter;
 	}
 
-	public void update(Calculator c) {
+	public void update(CartesianCalculation c) {
 		if (isQ)
 			move3(c);
 		else
@@ -180,7 +180,7 @@ public class PeriodCounter {
 		return counter == LAPS;
 	}
 
-	public void reset(double w) {
+	public void externalReset(CartesianCalculation c) {
 		z1 = 2;
 		z2 = 2;
 		counter = 0;
@@ -194,7 +194,8 @@ public class PeriodCounter {
 		isStartWrite = false;
 		list = new LinkedList<Vector>();
 		energyList = new LinkedList<Double>();
-		MAX_PERIOD = maxWaiting2period(w);
+
+		MAX_PERIOD = maxWaiting2period(((Circular) c.fieldsList.get(Circular.class)).getW());
 	}
 
 

@@ -8,13 +8,15 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.ListIterator;
 
 import javax.imageio.ImageIO;
 
-import main.Calculator;
+import main.CartesianCalculation;
 import main.Vector;
 import main.fields.Anisotrophia;
 import main.fields.Circular;
@@ -24,7 +26,7 @@ public class Draw {
 
 	private final static int size = 1000;
 	
-	private Calculator c;
+	private List<Vector> list;
 	
 	private double xAngle; 
 	private double yAngle; 
@@ -32,11 +34,13 @@ public class Draw {
 	private String name;
 	private BufferedImage bi;
 	private Graphics2D g;
+
+	private ArrayList<Vector> lastList = new ArrayList<Vector>();
+	private Vector easyAxe;
 	
-	private LinkedList<Vector> lastList = new LinkedList<Vector>();
-	
-	public Draw(Calculator c, double xAngle, double yAngle, double zAngle, String name) {
-		this.c = c;
+	public Draw(List<Vector> list, Vector easyAxe, double xAngle, double yAngle, double zAngle, String name) {
+		this.list = list;
+		this.easyAxe = easyAxe;
 		this.xAngle = xAngle;
 		this.yAngle = yAngle;
 		this.zAngle = zAngle;
@@ -52,7 +56,7 @@ public class Draw {
 			wrightAxeOfAnisotrophia(Color.green);
 			wrightSecondCircle(Color.red);
 
-			wright(rotate(c.getArray()), Color.BLUE);			
+			wright(rotate(list), Color.BLUE);			
 			drawAxes(true, Color.black);
 			//writeLegend();
 			
@@ -76,11 +80,11 @@ public class Draw {
 	
 	public void drawAnimationTraectory() {
 
-		ListIterator<Vector> iter = c.getArray().listIterator();
+		ListIterator<Vector> iter = list.listIterator();
 		
 		int counter = 0;
 		int imageCounter = 0;
-		LinkedList<Vector> tempList = new LinkedList<Vector>();
+		ArrayList<Vector> tempList = new ArrayList<Vector>();
 		
 		while (iter.hasNext()) {
 			Vector temp = iter.next();
@@ -92,7 +96,7 @@ public class Draw {
 				update();
 				wright(rotate(lastList), Color.CYAN);
 				g.setStroke(new BasicStroke(2.0f));
-				drawLine(tempList.getLast().clone().rotate(xAngle, yAngle, zAngle), Color.BLUE);
+				drawLine(tempList.get(tempList.size() - 1).clone().rotate(xAngle, yAngle, zAngle), Color.BLUE);
 				g.setStroke(new BasicStroke(1.0f));
 				
 				save(bi, new File(new Date().getTime() +".PNG"));
@@ -104,13 +108,13 @@ public class Draw {
 	
 	public void drawAnimationTraectoryWithoutTracing() {
 
-		ListIterator<Vector> iter = c.getArray().listIterator();
+		ListIterator<Vector> iter = list.listIterator();
 		
 		int counter = 0;
 		int imageCounter = 0;
 		LinkedList<Vector> tempList = new LinkedList<Vector>();
 		
-		for (Vector vec : c.getArray())
+		for (Vector vec : list)
 			lastList.add(vec);
 		
 		while (iter.hasNext()) {
@@ -120,7 +124,7 @@ public class Draw {
 				System.out.println(++imageCounter);
 				counter = 0;
 				update();
-				wright(rotate(c.getArray()), Color.CYAN);
+				wright(rotate(list), Color.CYAN);
 				g.setStroke(new BasicStroke(2.0f));
 				drawLine(tempList.getLast().rotate(xAngle, yAngle, zAngle), Color.BLUE);
 				g.setStroke(new BasicStroke(1.0f));
@@ -133,25 +137,28 @@ public class Draw {
 		
 	
 	private void wrightTraectory(int flushSize, Color color) {
-		LinkedList<Vector> originalList = c.getArray();
-		LinkedList<Vector> list;
+		List<Vector> originalList = list;
+		ArrayList<Vector> list;
 		while (true) {
-			list = new LinkedList<Vector>();
+			list = new ArrayList<Vector>();
 			if (originalList.size() < flushSize) {
 				wright(originalList, color);
 				break;
 			}
-			for (int i = 0; i < flushSize; i++)
-				list.add(originalList.removeFirst());
+			
+			for (Vector v : originalList.subList(0, flushSize))
+				list.add(v.clone());
+			originalList = originalList.subList(flushSize, originalList.size() - 1);
+
 			wright(list, color);
 		}
 	}
 	
 	
 		
-	private LinkedList<Vector> rotate(LinkedList<Vector> list) {
-		LinkedList<Vector> newArray = new LinkedList<Vector>();
-		ListIterator<Vector> iterator = list.listIterator();
+	private ArrayList<Vector> rotate(List<Vector> list2) {
+		ArrayList<Vector> newArray = new ArrayList<Vector>();
+		ListIterator<Vector> iterator = list2.listIterator();
 		Vector dot;
 		while (iterator.hasNext()) 
 			newArray.add(iterator.next().rotate(xAngle, yAngle, zAngle));
@@ -161,7 +168,7 @@ public class Draw {
 	
 
 	
-	private void wright(LinkedList<Vector> array, Color color) {
+	private void wright(List<Vector> array, Color color) {
 		
 		ListIterator<Vector> iter =array.listIterator();
 		Vector dot1 = iter.next();
@@ -189,7 +196,7 @@ public class Draw {
 		g.setColor(color);
 		g.setStroke(new BasicStroke(5.0f));
 		
-		LinkedList<Vector> array = new LinkedList<Vector>();
+		ArrayList<Vector> array = new ArrayList<Vector>();
 		for (double x = -1; x <= 1; x += 0.01) 
 			array.add(new Vector(x, Math.sqrt(1 - x*x), 0));
 		for (double x = -1; x <= 1; x += 0.01) 
@@ -205,7 +212,7 @@ public class Draw {
 	@SuppressWarnings("unused")
 	private void wrightDot(double r, Vector dot, Color color) {
 		g.setStroke(new BasicStroke(7.0f));
-		LinkedList<Vector> array = new LinkedList<Vector>();
+		ArrayList<Vector> array = new ArrayList<Vector>();
 		for (double x = dot.getX() - r; x <= dot.getX() + r; x += r/4)
 			for (double y = dot.getY() - r; y <= dot.getY() + r; y += r/4)
 				for (double z = dot.getZ() - r; z <= dot.getZ() + r; z += r/4)
@@ -232,10 +239,10 @@ public class Draw {
 		double w = 0;
 		double h = 0;
 		
-		if (c.fieldsList.isContain(Circular.class)) {
-			w = ((Circular)  c.fieldsList.get(Circular.class)).getW();
-			h = ((Circular)  c.fieldsList.get(Circular.class)).getH();
-		}
+//		if (c.fieldsList.isContain(Circular.class)) {
+//			w = ((Circular)  c.fieldsList.get(Circular.class)).getW();
+//			h = ((Circular)  c.fieldsList.get(Circular.class)).getH();
+//		}
 
 		
 		g2.drawString("w: " + w, size/10, size + 4 * size/20);
@@ -266,7 +273,7 @@ public class Draw {
 	private void drawLine(Vector dot, Color color) {
 		g.setColor(color);
 
-		LinkedList<Vector> array = new LinkedList<Vector>();
+		ArrayList<Vector> array = new ArrayList<Vector>();
 		array.add(dot);
 		array.add(new Vector());
 		array.add(new Vector());
@@ -275,12 +282,10 @@ public class Draw {
 	}
 	
 	private void wrightAxeOfAnisotrophia(Color color) {
-		if (c.fieldsList.isContain(Anisotrophia.class)) {
-			Vector axe = ((Anisotrophia) c.fieldsList.get(Anisotrophia.class)).getAxe();
-						
+		if (easyAxe != null) {
 			g.setStroke(new BasicStroke(3.0f));
-			drawLine(axe.rotate(xAngle, yAngle, zAngle).multiply(-1.5), color);
-			drawLine(axe.rotate(xAngle, yAngle, zAngle).multiply(1.5), color);
+			drawLine(easyAxe.rotate(xAngle, yAngle, zAngle).multiply(-1.5), color);
+			drawLine(easyAxe.rotate(xAngle, yAngle, zAngle).multiply(1.5), color);
 			g.setStroke(new BasicStroke(1.0f));
 		}
 	}

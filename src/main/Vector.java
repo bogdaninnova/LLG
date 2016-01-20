@@ -2,14 +2,20 @@ package main;
 
 public class Vector {
 
-	private double x;
-	private double y;
-	private double z;
+	private final double x;
+	private final double y;
+	private final double z;
 
 	public Vector(double x, double y, double z) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
+	}
+	
+	public Vector(double theta, double fi) {
+		x = Math.sin(theta) * Math.cos(fi);
+		y = Math.sin(theta) * Math.sin(fi);
+		z = Math.cos(theta);
 	}
 
 	public Vector(Vector ... vectors) {
@@ -24,23 +30,23 @@ public class Vector {
 		this.z = z;
 	}
 
-	public strictfp double getX() {
+	public double getX() {
 		return x;
 	}
 
-	public strictfp double getY() {
+	public double getY() {
 		return y;
 	}
 
-	public strictfp double getZ() {
+	public double getZ() {
 		return z;
 	}
 
-	public strictfp double getThetta() {
+	public double getThetta() {
 		return Math.acos(z / modul());
 	}
 
-	public strictfp double getPhi() {
+	public double getPhi() {
 		if (x == 0)
 			return Math.PI / 2;
 		return Math.atan(y / x);
@@ -54,17 +60,17 @@ public class Vector {
 		return new Vector(x * a, y * a, z * a);
 	}
 
-	public strictfp double modul() {
+	public double modul() {
 		return Math.sqrt(x*x+y*y+z*z);
 	}
 
-	public strictfp Vector crossProduct(Vector vec) {
+	public Vector crossProduct(Vector vec) {
 		return new Vector(y * vec.getZ() - z * vec.getY(),
 				z * vec.getX() - x * vec.getZ(),
 				x * vec.getY() - y * vec.getX());
 	}
 
-	public strictfp double dotProduct(Vector vec) {
+	public double dotProduct(Vector vec) {
 		return x * vec.getX() + y * vec.getY() + z * vec.getZ();
 	}
 

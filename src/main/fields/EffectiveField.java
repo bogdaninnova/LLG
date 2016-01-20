@@ -2,7 +2,6 @@ package main.fields;
 
 import java.util.ArrayList;
 
-import main.Constants;
 import main.Vector;
 
 public class EffectiveField {

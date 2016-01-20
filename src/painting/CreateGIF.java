@@ -10,7 +10,7 @@ import javax.imageio.ImageIO;
 import javax.imageio.stream.FileImageOutputStream;
 import javax.imageio.stream.ImageOutputStream;
 
-import main.Calculator;
+import main.CartesianCalculation;
 import main.Vector;
 
 public class CreateGIF {

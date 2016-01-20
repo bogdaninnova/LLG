@@ -10,18 +10,19 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.ListIterator;
 
 import javax.imageio.ImageIO;
 
-import main.Calculator;
+import main.CartesianCalculation;
 import main.Vector;
 
 public class DrawImpuls {
 
 	private final static int size = 1000;
 	
-	private Calculator c;
+	private CartesianCalculation c;
 	
 	private double xAngle; 
 	private double yAngle; 
@@ -31,7 +32,7 @@ public class DrawImpuls {
 	private Graphics2D g;
 	
 
-	public DrawImpuls(Calculator c, double xAngle, double yAngle, double zAngle, String name) {
+	public DrawImpuls(CartesianCalculation c, double xAngle, double yAngle, double zAngle, String name) {
 		this.c = c;
 		this.xAngle = xAngle;
 		this.yAngle = yAngle;
@@ -60,21 +61,24 @@ public class DrawImpuls {
 	}
 	
 	private void wrightTraectory(int flushSize, Color color) {
-		LinkedList<Vector> originalList = c.getArray();
-		LinkedList<Vector> list;
+		List<Vector> originalList = c.getArray();
+		List<Vector> list;
 		while (true) {
 			list = new LinkedList<Vector>();
 			if (originalList.size() < flushSize) {
 				wright(rotate(originalList), color);
 				break;
 			}
-			for (int i = 0; i < flushSize; i++)
-				list.add(originalList.removeFirst());
+			
+			for (Vector v : originalList.subList(0, flushSize))
+				list.add(v.clone());
+			originalList = originalList.subList(flushSize, originalList.size() - 1);
+			
 			wright(rotate(list), color);
 		}
 	}
 	
-	private LinkedList<Vector> rotate(LinkedList<Vector> list) {
+	private List<Vector> rotate(List<Vector> list) {
 		LinkedList<Vector> newArray = new LinkedList<Vector>();
 		ListIterator<Vector> iterator = list.listIterator();
 		Vector dot;
@@ -84,7 +88,7 @@ public class DrawImpuls {
 		return newArray;
 	}
 	
-	private void wright(LinkedList<Vector> array, Color color) {
+	private void wright(List<Vector> array, Color color) {
 		
 		ListIterator<Vector> iter =array.listIterator();
 		Vector dot1 = iter.next();
