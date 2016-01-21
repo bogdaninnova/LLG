@@ -1,7 +1,6 @@
 package main;
 
 import main.fields.Circular;
-import main.fields.Lineal;
 
 import java.util.LinkedList;
 

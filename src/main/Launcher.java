@@ -5,7 +5,6 @@ import bulkFileEditing.DrawQWSet;
 import bulkFileEditing.TextWriter;
 import main.fields.Anisotrophia;
 import main.fields.Circular;
-import main.fields.EffectiveField;
 import main.fields.Lineal;
 import painting.Draw;
 
@@ -19,7 +18,7 @@ import java.util.Iterator;
 public class Launcher {
 
 	public static void main(String...strings) {
-		//character(0.3, 0.5, 1);
+		//character(0.01, 0, 1);
 		//averrageComponents(0.3);
 		
 		double theta = 0 * Math.PI;
@@ -27,20 +26,20 @@ public class Launcher {
 		double h = 0.1;
 		double w = 1;
 		String path = "theta=" + theta + ";fi=" + fi + ";h=" + h + ";w=" + w;
-		
+
 		Date d0 = new Date();
-		
+
 		CartesianCalculation cc = new CartesianCalculation(new Anisotrophia(theta, fi), new Circular(w, h));
-		cc.run(500, 500);
+		cc.run(0, 1000);
 		new Draw(cc.getArray(), new Vector(theta, fi), 0.4 * Math.PI, 0.4 * Math.PI, 0, "CC-" + path).drawTraectory(true);
 
 		Date d1 = new Date();
 		System.out.println(d1.getTime()-d0.getTime());
-		
+
 		SphericalCalculation sc = new SphericalCalculation(theta, fi, h, w);
-		sc.run(500, 500);
+		sc.run(0, 1000);
 		new Draw(sc.array, new Vector(theta, fi), 0.4 * Math.PI, 0.4 * Math.PI, 0, "SC-" + path).drawTraectory(true);
-	
+
 		System.out.println(new Date().getTime()-d1.getTime());
 	}
 
@@ -50,13 +49,13 @@ public class Launcher {
 
 		CartesianCalculation c = new CartesianCalculation(
 				new Anisotrophia(theta, fi),
-				new Circular(w, h));
-		c.run(500, 500);
-		//c.run();
+				new Lineal(new Vector(1, 0, 0), w, h));
+		//c.run(500, 500);
+		c.run();
 
-		new Draw(c.getArray(),
-				((Anisotrophia) c.fieldsList.get(Anisotrophia.class)).getAxe(),
-				0.4 * Math.PI, 0.4 * Math.PI, 0, path).drawTraectory(true);
+//		new Draw(c.getArray(),
+//				((Anisotrophia) c.fieldsList.get(Anisotrophia.class)).getAxe(),
+//				0.4 * Math.PI, 0.4 * Math.PI, 0, path).drawTraectory(true);
 
 		Object[] result = {c.getEnergy(), c.getM_aver()};
 
@@ -85,27 +84,26 @@ public class Launcher {
 	public static void character (double h, double fi1, double fi2) {
 
 		double angleStep = 0.05;
-
-		String destination = "res/circular";
+		String destination = "res/angle_step = 0.05";
 		createFolder(destination);
 		String path = destination + "/h = " + h;
 		String track = "track";
 		createFolder(path);
 
-//		ArrayList<Double> e0List = new ArrayList<Double>();
-//		ArrayList<Vector> m0List = new ArrayList<Vector>();
-//		String anis0Path = path + "/h = " + h + ";theta=" + 0.0 + ";fi=" + 0.0;
-//		createFolder(anis0Path);
-//		createFolder(anis0Path + "/" + track);
-//		for (double w = 0.01; w <= 2; w = (round(w + 0.01, 2))) {
-//			System.out.println("h = " + h + "theta = " + 0.0 + ", fi = " + 0.0 + ", w = " + w);
-//			String track0Name = anis0Path + "/" + track + "/h = "+ h +", theta = " + 0.0 + ", fi = " + 0.0 + ", w = " + w;
-//			Object[] result = oneParticle(0, 0, h, w, track0Name);
-//			e0List.add((double)result[0]);
-//			m0List.add((Vector) result[1]);
-//			TextWriter.writeDoubleList(e0List, anis0Path + "/Energy");
-//			TextWriter.writeTraectorysCoordinates(m0List, anis0Path + "/Average M");
-//		}
+		ArrayList<Double> e0List = new ArrayList<Double>();
+		ArrayList<Vector> m0List = new ArrayList<Vector>();
+		String anis0Path = path + "/h = " + h + ";theta=" + 0.0 + ";fi=" + 0.0;
+		createFolder(anis0Path);
+		createFolder(anis0Path + "/" + track);
+		for (double w = 0.01; w <= 2; w = (round(w + 0.01, 2))) {
+			System.out.println("h = " + h + "theta = " + 0.0 + ", fi = " + 0.0 + ", w = " + w);
+			String track0Name = anis0Path + "/" + track + "/h = "+ h +", theta = " + 0.0 + ", fi = " + 0.0 + ", w = " + w;
+			Object[] result = oneParticle(0, 0, h, w, track0Name);
+			e0List.add((double)result[0]);
+			m0List.add((Vector) result[1]);
+			TextWriter.writeDoubleList(e0List, anis0Path + "/Energy");
+			TextWriter.writeTraectorysCoordinates(m0List, anis0Path + "/Average M");
+		}
 
 		for (double fi = fi1; fi < fi2; fi = round(fi + angleStep, 2))
 			for (double theta = angleStep; theta < 1; theta = round(theta + angleStep, 2)) {
@@ -128,20 +126,20 @@ public class Launcher {
 				TextWriter.writeTraectorysCoordinates(mList, anisPath + "/Average M");
 			}
 
-//		ArrayList<Double> e1List = new ArrayList<Double>();
-//		ArrayList<Vector> m1List = new ArrayList<Vector>();
-//		String anis1Path = path + "/h = " + h + ";theta=" + 1.0 + ";fi=" + 0.0;
-//		createFolder(anis1Path);
-//		createFolder(anis1Path + "/" + track);
-//		for (double w = 0.01; w <= 2; w = (round(w + 0.01, 2))) {
-//			System.out.println("h = " + h + "theta = " + 1.0 + ", fi = " + 0.0 + ", w = " + w);
-//			String track1Name = anis1Path + "/" + track + "/h = "+ h +", theta = " + 1.0 + ", fi = " + 0.0 + ", w = " + w;
-//			Object[] result = oneParticle(1, 0, h, w, track1Name);
-//			e1List.add((double)result[0]);
-//			m1List.add((Vector) result[1]);
-//			TextWriter.writeDoubleList(e1List, anis1Path + "/Energy");
-//			TextWriter.writeTraectorysCoordinates(m1List, anis1Path + "/Average M");
-//		}
+		ArrayList<Double> e1List = new ArrayList<Double>();
+		ArrayList<Vector> m1List = new ArrayList<Vector>();
+		String anis1Path = path + "/h = " + h + ";theta=" + 1.0 + ";fi=" + 0.0;
+		createFolder(anis1Path);
+		createFolder(anis1Path + "/" + track);
+		for (double w = 0.01; w <= 2; w = (round(w + 0.01, 2))) {
+			System.out.println("h = " + h + "theta = " + 1.0 + ", fi = " + 0.0 + ", w = " + w);
+			String track1Name = anis1Path + "/" + track + "/h = "+ h +", theta = " + 1.0 + ", fi = " + 0.0 + ", w = " + w;
+			Object[] result = oneParticle(1, 0, h, w, track1Name);
+			e1List.add((double)result[0]);
+			m1List.add((Vector) result[1]);
+			TextWriter.writeDoubleList(e1List, anis1Path + "/Energy");
+			TextWriter.writeTraectorysCoordinates(m1List, anis1Path + "/Average M");
+		}
 	}
 
 	public static void Q_w(double h, double w1, double w2) {
