@@ -2,10 +2,10 @@ package main;
 
 import bulkFileEditing.DrawQW;
 import bulkFileEditing.DrawQWSet;
+import bulkFileEditing.FolderEditor;
 import bulkFileEditing.TextWriter;
 import main.fields.Anisotrophia;
 import main.fields.Circular;
-import main.fields.EffectiveField;
 import main.fields.Lineal;
 import painting.Draw;
 
@@ -19,19 +19,32 @@ import java.util.Iterator;
 public class Launcher {
 
 	public static void main(String...strings) {
-		//character(0.3, 0.5, 1);
-		//averrageComponents(0.3);
 		
-		double theta = 0 * Math.PI;
-		double fi = 0 * Math.PI;
-		double h = 0.1;
-		double w = 1;
+		//oneParticle(0.75 * Math.PI, 0.9 * 2 * Math.PI, 0.05, 0.9, "track");
+		
+		ArrayList<Double> list = new ArrayList<Double>();
+		for (double w = 0.1; w <= 3; w = (round(w + 0.01, 2))) {
+			System.out.println(w);
+			list.add(parametricResonanse(0.005 * Math.PI, 0.3, w, "test"));
+		}
+		TextWriter.writeDoubleList(list, "test");
+		
+		
+		//parametricResonanse(0.005 * Math.PI, 0.3, 0.1, "test");
+		
+		//double h = 0.1;
+		//bulkWright("D:\\Download\\res\\res\\Q_W\\angle_step = 0.05\\h = " + h, "lineal. h = " + h);
+
+	}
+
+	
+	public static void speedTest(double theta, double fi, double h, double w) {
 		String path = "theta=" + theta + ";fi=" + fi + ";h=" + h + ";w=" + w;
 		
 		Date d0 = new Date();
 		
 		CartesianCalculation cc = new CartesianCalculation(new Anisotrophia(theta, fi), new Circular(w, h));
-		cc.run(500, 500);
+		cc.run(0, 2000);
 		new Draw(cc.getArray(), new Vector(theta, fi), 0.4 * Math.PI, 0.4 * Math.PI, 0, "CC-" + path).drawTraectory(true);
 
 		Date d1 = new Date();
@@ -43,16 +56,18 @@ public class Launcher {
 	
 		System.out.println(new Date().getTime()-d1.getTime());
 	}
-
+	
+	
+	
 	public static Object[] oneParticle(double theta, double fi, double h, double w, String path) {
 
 		//Date start = new Date();
 
 		CartesianCalculation c = new CartesianCalculation(
 				new Anisotrophia(theta, fi),
-				new Circular(w, h));
-		c.run(500, 500);
-		//c.run();
+				new Lineal(new Vector(1,0,0), w, h));
+		//c.run(500, 500);
+		c.run();
 
 		new Draw(c.getArray(),
 				((Anisotrophia) c.fieldsList.get(Anisotrophia.class)).getAxe(),
@@ -62,22 +77,55 @@ public class Launcher {
 
 		return result;
 	}
+	
+	
+	public static double parametricResonanse(double delta, double h, double w, String path) {
+
+		//Date start = new Date();
+
+		CartesianCalculation c = new CartesianCalculation(
+				new Anisotrophia(0.5 * Math.PI + delta, 0),
+				new Lineal(new Vector(1,0,0), w, h));
+		//c.run(500, 500);
+		c.run();
+
+//		new Draw(c.getArray(),
+//				((Anisotrophia) c.fieldsList.get(Anisotrophia.class)).getAxe(),
+//				0.4 * Math.PI, 0.4 * Math.PI, 0, path).drawTraectory(true);
+
+		return c.getEnergy();
+	}
+	
+	
 
 	public static void bulkWright(String path, String resultName) {
 		DrawQWSet dr = new DrawQWSet();
-
+		Vector easyAxe = new Vector(1, 0, 0);
 
 		File folder = new File(path);
 		String[] names = folder.list();
-
+		ArrayList<Double> listAngles = new ArrayList<Double>();
+		ArrayList<Double> listTheta = new ArrayList<Double>();
+		ArrayList<Double> listFi = new ArrayList<Double>();
 		for(String name : names) {
 			File file = new File(path + "/" + name);
 			String[] cons = file.list();
 			for(String c : cons)
-				if (c.contains("Energy"))
-					dr.addTrack(path + "/" + name + "/" + c);
+				if (c.contains("Energy")) {
+					double[] data = FolderEditor.parseName(name);
+					double angle = Math.acos(new Vector(data[1] * Math.PI, data[2]* 2 * Math.PI).dotProduct(easyAxe)) / Math.PI;
+					int d = dr.addTrack(path + "/" + name + "/" + c);
+					for (int i = 0; i < d; i++) {
+						listAngles.add(angle);
+						listTheta.add(data[1]);
+						listFi.add(data[2]);
+					}
+						
+				}
 		}
-
+		TextWriter.writeDoubleList(listAngles, "angles");
+		TextWriter.writeDoubleList(listTheta, "theta");
+		TextWriter.writeDoubleList(listFi, "fi");
 		dr.wright();
 		dr.save(resultName);
 	}

@@ -16,6 +16,8 @@ public class DrawQWSet {
     BufferedImage bi = new BufferedImage(sizeW, sizeH, BufferedImage.TYPE_4BYTE_ABGR);
     Graphics2D g = Draw.getBackgroundedGraphics2D(bi, Color.white);
 
+    
+    
     private Set<ArrayList<Double>> set = new HashSet<ArrayList<Double>>();
 
     double step;
@@ -29,20 +31,26 @@ public class DrawQWSet {
     public void wright() {
 
         step = (double) sizeW / (double) set.iterator().next().size();
-        coefQ = (double) sizeH / getMax(set);
+        coefQ = (double) sizeH / getMaxFromSet(set);
 
         for (ArrayList<Double> list : set)
             wright(list, g, Color.BLACK);
     }
 
-    public void addTrack(String path) {
+    public int addTrack(String path) {
+    	int res = -1;
         try {
-            set.add(readDoubleListList(path));
+        	ArrayList<Double> list = readDoubleListList(path);
+            set.add(list);
+            res = getJumpW(list);
+            //System.out.println("W = " + ]);
+           // System.out.println("Q = " +  + "\n");
         } catch (NumberFormatException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return res;
     }
 
     public void save(String name) {
@@ -72,21 +80,52 @@ public class DrawQWSet {
         }
     }
 
-    private static double getMax(Set <ArrayList<Double>> set) {
+    private static double getMaxFromSet(Set <ArrayList<Double>> set) {
         double max = 0;
-
-        for (ArrayList<Double> list : set) {
-            ListIterator<Double> iter = list.listIterator();
-            while (iter.hasNext()) {
-                double current = iter.next();
-                if (current > max)
-                    max = current;
-            }
+        double current;
+        for (ArrayList<Double> list : set)  {
+        	current = getMaxFromTrack(list);
+            if (current > max)
+                max = current;
         }
-
         return max;
     }
 
+    private static double getMaxFromTrack(ArrayList<Double> list) {
+        double max = 0;
+        double step = 0;
+        double w = 0;
+        ListIterator<Double> iter = list.listIterator();
+        while (iter.hasNext()) {
+            double current = iter.next();
+            step++;
+            if (current > max) {
+                max = current;
+                w = step;
+            }
+        }
+        return max;
+    }
+    
+    private int getJumpW(ArrayList<Double> list) {
+    	double step = 1;
+    	int counter = 0;
+    	
+        ListIterator<Double> iter = list.listIterator();
+        double ePrev = iter.next();
+        double eThis = 0;
+        while (iter.hasNext()) {
+        	step++;
+        	eThis = iter.next();
+        	if ((ePrev * 5 < eThis) && (step > 10)) {
+        		System.out.println(((double) step) / 100);
+        		counter++;
+        	}
+        	ePrev = eThis;
+        }
+        return counter;
+        	
+    }
 
     @SuppressWarnings("resource")
     private ArrayList<Double> readDoubleListList(String path) throws NumberFormatException, IOException {
