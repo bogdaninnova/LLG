@@ -1,6 +1,6 @@
 package main;
 
-import main.fields.Circular;
+import main.fields.Lineal;
 
 import java.util.LinkedList;
 
@@ -121,15 +121,15 @@ public class PeriodCounter {
 
 	private void reset(CartesianCalculation c) {
 		counter = 0;
-		omega = ((Circular) c.fieldsList.get(Circular.class)).getW();//TODO
+		omega = ((Lineal) c.fieldsList.get(Lineal.class)).getW();//TODO
 		startDot = c.M.clone();
 		isLastInside = true;
 		time = 0;
 		dt = c.dt;
 		list = new LinkedList<Vector>();
-		
-		
-		
+
+
+
 		energyList = new LinkedList<Double>();
 		steps = 0;
 		energy = 0;
@@ -139,7 +139,7 @@ public class PeriodCounter {
 	private static boolean isDotNearDot(Vector dot1, Vector dot2) {
 		return (Math.pow(dot1.getX() - dot2.getX(), 2) +
 				Math.pow(dot1.getY() - dot2.getY(), 2) +
-					Math.pow(dot1.getZ() - dot2.getZ(), 2) < r*r);
+				Math.pow(dot1.getZ() - dot2.getZ(), 2) < r*r);
 	}
 
 
@@ -194,7 +194,7 @@ public class PeriodCounter {
 		list = new LinkedList<Vector>();
 		energyList = new LinkedList<Double>();
 
-		MAX_PERIOD = maxWaiting2period(((Circular) c.fieldsList.get(Circular.class)).getW());
+		MAX_PERIOD = maxWaiting2period(((Lineal) c.fieldsList.get(Lineal.class)).getW());
 	}
 
 

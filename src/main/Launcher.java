@@ -2,6 +2,7 @@ package main;
 
 import bulkFileEditing.DrawQW;
 import bulkFileEditing.DrawQWSet;
+import bulkFileEditing.FolderEditor;
 import bulkFileEditing.TextWriter;
 import main.fields.Anisotrophia;
 import main.fields.Circular;
@@ -18,30 +19,47 @@ import java.util.Iterator;
 public class Launcher {
 
 	public static void main(String...strings) {
-		//character(0.01, 0, 1);
-		//averrageComponents(0.3);
-		
-		double theta = 0 * Math.PI;
-		double fi = 0 * Math.PI;
-		double h = 0.1;
-		double w = 1;
+
+		//oneParticle(0.75 * Math.PI, 0.9 * 2 * Math.PI, 0.05, 0.9, "track");
+
+//		for (double h = 0.4; h < 1; h = round(h + 0.1, 1)) {
+//			ArrayList<Double> list = new ArrayList<Double>();
+//			for (double w = 0.1; w <= 3; w = (round(w + 0.01, 2))) {
+//				System.out.println("h = " + h + "; w = " + w);
+//				list.add(parametricResonanse(0.005 * Math.PI, h, w, "test"));
+//			}
+//			TextWriter.writeDoubleList(list, "test h = " + h);
+//		}
+
+
+		//parametricResonanse(0.005 * Math.PI, 0.3, 0.1, "test");
+
+		//double h = 0.1;
+		//bulkWright("D:\\Download\\res\\res\\Q_W\\angle_step = 0.05\\h = " + h, "lineal. h = " + h);
+
+	}
+
+
+	public static void speedTest(double theta, double fi, double h, double w) {
 		String path = "theta=" + theta + ";fi=" + fi + ";h=" + h + ";w=" + w;
 
 		Date d0 = new Date();
 
 		CartesianCalculation cc = new CartesianCalculation(new Anisotrophia(theta, fi), new Circular(w, h));
-		cc.run(0, 1000);
+		cc.run(0, 2000);
 		new Draw(cc.getArray(), new Vector(theta, fi), 0.4 * Math.PI, 0.4 * Math.PI, 0, "CC-" + path).drawTraectory(true);
 
 		Date d1 = new Date();
 		System.out.println(d1.getTime()-d0.getTime());
 
 		SphericalCalculation sc = new SphericalCalculation(theta, fi, h, w);
-		sc.run(0, 1000);
+		sc.run(500, 500);
 		new Draw(sc.array, new Vector(theta, fi), 0.4 * Math.PI, 0.4 * Math.PI, 0, "SC-" + path).drawTraectory(true);
 
 		System.out.println(new Date().getTime()-d1.getTime());
 	}
+
+
 
 	public static Object[] oneParticle(double theta, double fi, double h, double w, String path) {
 
@@ -49,7 +67,27 @@ public class Launcher {
 
 		CartesianCalculation c = new CartesianCalculation(
 				new Anisotrophia(theta, fi),
-				new Lineal(new Vector(1, 0, 0), w, h));
+				new Lineal(new Vector(1,0,0), w, h));
+		//c.run(500, 500);
+		c.run();
+
+		new Draw(c.getArray(),
+				((Anisotrophia) c.fieldsList.get(Anisotrophia.class)).getAxe(),
+				0.4 * Math.PI, 0.4 * Math.PI, 0, path).drawTraectory(true);
+
+		Object[] result = {c.getEnergy(), c.getM_aver()};
+
+		return result;
+	}
+
+
+	public static double parametricResonanse(double delta, double h, double w, String path) {
+
+		//Date start = new Date();
+
+		CartesianCalculation c = new CartesianCalculation(
+				new Anisotrophia(0.5 * Math.PI + delta, 0),
+				new Lineal(new Vector(1,0,0), w, h));
 		//c.run(500, 500);
 		c.run();
 
@@ -57,26 +95,39 @@ public class Launcher {
 //				((Anisotrophia) c.fieldsList.get(Anisotrophia.class)).getAxe(),
 //				0.4 * Math.PI, 0.4 * Math.PI, 0, path).drawTraectory(true);
 
-		Object[] result = {c.getEnergy(), c.getM_aver()};
-
-		return result;
+		return c.getEnergy();
 	}
+
+
 
 	public static void bulkWright(String path, String resultName) {
 		DrawQWSet dr = new DrawQWSet();
-
+		Vector easyAxe = new Vector(1, 0, 0);
 
 		File folder = new File(path);
 		String[] names = folder.list();
-
+		ArrayList<Double> listAngles = new ArrayList<Double>();
+		ArrayList<Double> listTheta = new ArrayList<Double>();
+		ArrayList<Double> listFi = new ArrayList<Double>();
 		for(String name : names) {
 			File file = new File(path + "/" + name);
 			String[] cons = file.list();
 			for(String c : cons)
-				if (c.contains("Energy"))
-					dr.addTrack(path + "/" + name + "/" + c);
-		}
+				if (c.contains("Energy")) {
+					double[] data = FolderEditor.parseName(name);
+					double angle = Math.acos(new Vector(data[1] * Math.PI, data[2]* 2 * Math.PI).dotProduct(easyAxe)) / Math.PI;
+					int d = dr.addTrack(path + "/" + name + "/" + c);
+					for (int i = 0; i < d; i++) {
+						listAngles.add(angle);
+						listTheta.add(data[1]);
+						listFi.add(data[2]);
+					}
 
+				}
+		}
+		TextWriter.writeDoubleList(listAngles, "angles");
+		TextWriter.writeDoubleList(listTheta, "theta");
+		TextWriter.writeDoubleList(listFi, "fi");
 		dr.wright();
 		dr.save(resultName);
 	}
@@ -84,26 +135,27 @@ public class Launcher {
 	public static void character (double h, double fi1, double fi2) {
 
 		double angleStep = 0.05;
-		String destination = "res/angle_step = 0.05";
+
+		String destination = "res/circular";
 		createFolder(destination);
 		String path = destination + "/h = " + h;
 		String track = "track";
 		createFolder(path);
 
-		ArrayList<Double> e0List = new ArrayList<Double>();
-		ArrayList<Vector> m0List = new ArrayList<Vector>();
-		String anis0Path = path + "/h = " + h + ";theta=" + 0.0 + ";fi=" + 0.0;
-		createFolder(anis0Path);
-		createFolder(anis0Path + "/" + track);
-		for (double w = 0.01; w <= 2; w = (round(w + 0.01, 2))) {
-			System.out.println("h = " + h + "theta = " + 0.0 + ", fi = " + 0.0 + ", w = " + w);
-			String track0Name = anis0Path + "/" + track + "/h = "+ h +", theta = " + 0.0 + ", fi = " + 0.0 + ", w = " + w;
-			Object[] result = oneParticle(0, 0, h, w, track0Name);
-			e0List.add((double)result[0]);
-			m0List.add((Vector) result[1]);
-			TextWriter.writeDoubleList(e0List, anis0Path + "/Energy");
-			TextWriter.writeTraectorysCoordinates(m0List, anis0Path + "/Average M");
-		}
+//		ArrayList<Double> e0List = new ArrayList<Double>();
+//		ArrayList<Vector> m0List = new ArrayList<Vector>();
+//		String anis0Path = path + "/h = " + h + ";theta=" + 0.0 + ";fi=" + 0.0;
+//		createFolder(anis0Path);
+//		createFolder(anis0Path + "/" + track);
+//		for (double w = 0.01; w <= 2; w = (round(w + 0.01, 2))) {
+//			System.out.println("h = " + h + "theta = " + 0.0 + ", fi = " + 0.0 + ", w = " + w);
+//			String track0Name = anis0Path + "/" + track + "/h = "+ h +", theta = " + 0.0 + ", fi = " + 0.0 + ", w = " + w;
+//			Object[] result = oneParticle(0, 0, h, w, track0Name);
+//			e0List.add((double)result[0]);
+//			m0List.add((Vector) result[1]);
+//			TextWriter.writeDoubleList(e0List, anis0Path + "/Energy");
+//			TextWriter.writeTraectorysCoordinates(m0List, anis0Path + "/Average M");
+//		}
 
 		for (double fi = fi1; fi < fi2; fi = round(fi + angleStep, 2))
 			for (double theta = angleStep; theta < 1; theta = round(theta + angleStep, 2)) {
@@ -126,20 +178,20 @@ public class Launcher {
 				TextWriter.writeTraectorysCoordinates(mList, anisPath + "/Average M");
 			}
 
-		ArrayList<Double> e1List = new ArrayList<Double>();
-		ArrayList<Vector> m1List = new ArrayList<Vector>();
-		String anis1Path = path + "/h = " + h + ";theta=" + 1.0 + ";fi=" + 0.0;
-		createFolder(anis1Path);
-		createFolder(anis1Path + "/" + track);
-		for (double w = 0.01; w <= 2; w = (round(w + 0.01, 2))) {
-			System.out.println("h = " + h + "theta = " + 1.0 + ", fi = " + 0.0 + ", w = " + w);
-			String track1Name = anis1Path + "/" + track + "/h = "+ h +", theta = " + 1.0 + ", fi = " + 0.0 + ", w = " + w;
-			Object[] result = oneParticle(1, 0, h, w, track1Name);
-			e1List.add((double)result[0]);
-			m1List.add((Vector) result[1]);
-			TextWriter.writeDoubleList(e1List, anis1Path + "/Energy");
-			TextWriter.writeTraectorysCoordinates(m1List, anis1Path + "/Average M");
-		}
+//		ArrayList<Double> e1List = new ArrayList<Double>();
+//		ArrayList<Vector> m1List = new ArrayList<Vector>();
+//		String anis1Path = path + "/h = " + h + ";theta=" + 1.0 + ";fi=" + 0.0;
+//		createFolder(anis1Path);
+//		createFolder(anis1Path + "/" + track);
+//		for (double w = 0.01; w <= 2; w = (round(w + 0.01, 2))) {
+//			System.out.println("h = " + h + "theta = " + 1.0 + ", fi = " + 0.0 + ", w = " + w);
+//			String track1Name = anis1Path + "/" + track + "/h = "+ h +", theta = " + 1.0 + ", fi = " + 0.0 + ", w = " + w;
+//			Object[] result = oneParticle(1, 0, h, w, track1Name);
+//			e1List.add((double)result[0]);
+//			m1List.add((Vector) result[1]);
+//			TextWriter.writeDoubleList(e1List, anis1Path + "/Energy");
+//			TextWriter.writeTraectorysCoordinates(m1List, anis1Path + "/Average M");
+//		}
 	}
 
 	public static void Q_w(double h, double w1, double w2) {

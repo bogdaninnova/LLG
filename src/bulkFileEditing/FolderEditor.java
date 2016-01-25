@@ -20,7 +20,7 @@ public class FolderEditor {
             String[] cons = file.list();
             for(String c : cons) {
 
-            //    if (!c.contains("Energy.txt") && !c.contains("track"))
+                //    if (!c.contains("Energy.txt") && !c.contains("track"))
                 if (c.contains("Average M_x"))
                     new File(path + "/" + name + "/" + c).renameTo(new File(path + "/" + name + "/" + name + " M_x.txt"));
                 if (c.contains("Average M_y"))
@@ -89,24 +89,12 @@ public class FolderEditor {
         }
     }
 
-    private static void parseName(String name) {
-        //h = 0.1;theta=0.3;fi=0.1 h = 0.1;theta=0.3;fi=0.1 h = 0.1;theta=0.3;fi=0.1
-        System.out.println("-----------------------------------");
-        System.out.println(name);
+    public static double[] parseName(String name) {
         double h = Double.parseDouble(name.substring(name.indexOf('=') + 1, name.indexOf(';')));
-        System.out.println(h);
         double theta = Double.parseDouble(name.substring(name.indexOf('a') + 2, name.indexOf('f') - 1));
-        System.out.println(theta);
-
-        System.out.println(name.charAt(name.indexOf('i') + 5));
-
-        double fi;
-        if (name.charAt(name.indexOf('i') + 6) == ' ')
-            fi = Double.parseDouble(name.substring(name.indexOf('i') + 2, name.indexOf('i') + 5));
-        else
-            fi = Double.parseDouble(name.substring(name.indexOf('i') + 2, name.indexOf('i') + 6));
-        System.out.println(fi);
-        System.out.println("-----------------------------------");
+        double fi = Double.parseDouble(name.substring(name.indexOf('i') + 2, name.length()));
+        double[] result = {h, theta, fi};
+        return result;
     }
 
 
