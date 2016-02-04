@@ -19,7 +19,7 @@ public abstract class Calculation {
 	private static final double modulM = Math.pow(10, 4) / (2 * Math.PI);
 	private static final double Ha = 5 * Math.pow(10, 4);
 	protected static final double taoSigma = getTaoSigma();
-	
+
 	public static final double ALPHA = alpha0 + getAlphaSigma();
 
 	public abstract void run();
@@ -57,4 +57,5 @@ public abstract class Calculation {
 		return 8 * Math.PI * gamma * modulM * getTaoSigma() /
 				(3 * mu1) / (gamma * Ha);
 	}
+
 }

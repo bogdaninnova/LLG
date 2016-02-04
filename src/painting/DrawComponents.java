@@ -1,15 +1,16 @@
 package painting;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.util.*;
-
 import main.CartesianCalculation;
 import main.Vector;
 import main.fields.Impuls;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
 
 public class DrawComponents {
 
@@ -35,8 +36,8 @@ public class DrawComponents {
 
 		double h = 0;
 		
-		if (c.fieldsList.isContain(Impuls.class))
-			h =  ((Impuls) c.fieldsList.get(Impuls.class)).getH();
+		if (c.isContainField(Impuls.class))
+			h =  ((Impuls) c.getField(Impuls.class)).getH();
 
 		Draw.save(bi, new File(name + ".png"));
 	}

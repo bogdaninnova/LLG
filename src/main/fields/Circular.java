@@ -14,7 +14,7 @@ public class Circular extends Field {
 		return new Vector(h * Math.cos(w * t), h * Math.sin(w * t), 0);
 	}
 
-	public double getW() {
+	public Double getW() {
 		return w;
 	}
 

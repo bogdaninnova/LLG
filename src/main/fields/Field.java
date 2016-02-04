@@ -14,5 +14,7 @@ public abstract class Field {
 		dF2 = dF2.plus(dF1.multiply(-1));
 		return dF2.multiply(1 / dt);
 	}
+
+	public abstract Double getW();
 	
 }

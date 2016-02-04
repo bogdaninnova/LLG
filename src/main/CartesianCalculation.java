@@ -1,7 +1,6 @@
 package main;
 
 import main.fields.Anisotrophia;
-import main.fields.EffectiveField;
 import main.fields.Field;
 
 import java.util.ArrayList;
@@ -12,13 +11,12 @@ public class CartesianCalculation extends Calculation {
 	public Vector dM = new Vector();
 	public Vector M;
 
-	public EffectiveField fieldsList = new EffectiveField();
-
+	public ArrayList<Field> fields;
 	private PeriodCounter pc = new PeriodCounter();
 	public ArrayList<Double> energyList = new ArrayList<Double>();
 
 	public CartesianCalculation(Field... fields) {
-		updateFields(fields);
+		setFields(fields);
 		update();
 	}
 	
@@ -36,14 +34,29 @@ public class CartesianCalculation extends Calculation {
 		t = 0;
 	}
 	
-	public void updateFields(Field... fields) {
+	public void setFields(Field... fields) {
+		this.fields = new ArrayList<Field>();
 		for (Field field : fields)
-			fieldsList.add(field);
-		if (!fieldsList.isContain(Anisotrophia.class))
+			this.fields.add(field);
+
+		if (isContainField(Anisotrophia.class))
 			setBeginningLocation(new Vector(0, 0));
 		else
-			setBeginningLocation(new Vector(((Anisotrophia) fieldsList.get(Anisotrophia.class)).getAxe()));
+			setBeginningLocation(new Vector(((Anisotrophia) getField(Anisotrophia.class)).getAxe()));
+	}
 
+	public boolean isContainField(Class fieldClass) {
+		for (Field field : fields)
+			if (field.getClass().equals(fieldClass))
+				return true;
+		return false;
+	}
+
+	public Field getField(Class fieldClass) {
+		for (Field field : fields)
+			if (field.getClass().equals(fieldClass))
+				return field;
+		return null;
 	}
 
 	private void setBeginningLocation(Vector vector) {
@@ -102,7 +115,7 @@ public class CartesianCalculation extends Calculation {
 
 	private Vector LLG(double mx, double my, double mz, double t) {
 		Vector M = new Vector(mx, my, mz);
-		Vector MxH = M.crossProduct(fieldsList.getHeff(M, t));
+		Vector MxH = M.crossProduct(getHeff(M, t));
 		Vector a_MxHxH = M.crossProduct(MxH).multiply(ALPHA);
 
 		return new Vector(
@@ -110,6 +123,16 @@ public class CartesianCalculation extends Calculation {
 				(MxH.getY() + a_MxHxH.getY()),
 				(MxH.getZ() + a_MxHxH.getZ())).
 						multiply(-1 / (1 + Math.pow(ALPHA, 2)));
+	}
+
+	public Vector getHeff(Vector M, double t) {
+		Vector temp = new Vector();
+
+		for (Field field : fields) {
+			temp = temp.plus(field.getValue(M, t));
+			//temp = temp.plus(field.getDerivative(M, t).multiply(-Constants.taoSigma)); //TODO
+		}
+		return temp;
 	}
 
 }

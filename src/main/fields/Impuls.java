@@ -1,8 +1,9 @@
 package main.fields;
 
-import java.util.*;
-
 import main.Vector;
+
+import java.util.ArrayList;
+import java.util.ListIterator;
 
 public class Impuls extends Field {
 
@@ -27,7 +28,12 @@ public class Impuls extends Field {
 		}
 		return e.multiply(0);
 	}
-	
+
+	@Override
+	public Double getW() {
+		return null;
+	}
+
 	public double getCurrentTao(double t) {
 		ListIterator<ImpulsPart> iter = list.listIterator();
 		ImpulsPart imp;

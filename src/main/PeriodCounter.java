@@ -1,5 +1,6 @@
 package main;
 
+import main.fields.Circular;
 import main.fields.Lineal;
 
 import java.util.LinkedList;
@@ -121,7 +122,11 @@ public class PeriodCounter {
 
 	private void reset(CartesianCalculation c) {
 		counter = 0;
-		omega = ((Lineal) c.fieldsList.get(Lineal.class)).getW();//TODO
+
+		if (c.isContainField(Circular.class))
+			omega = c.getField(Circular.class).getW();
+		else
+			omega = c.getField(Lineal.class).getW();
 		startDot = c.M.clone();
 		isLastInside = true;
 		time = 0;
@@ -144,7 +149,7 @@ public class PeriodCounter {
 
 
 	private void raiseEnergy(CartesianCalculation c) {
-		energy += c.fieldsList.getHeff(c.M, c.t).dotProduct(c.dM) / c.dt;
+		energy += c.getHeff(c.M, c.t).dotProduct(c.dM) / c.dt;
 		M_aver = M_aver.plus(c.M);
 		steps++;
 	}
@@ -194,7 +199,10 @@ public class PeriodCounter {
 		list = new LinkedList<Vector>();
 		energyList = new LinkedList<Double>();
 
-		MAX_PERIOD = maxWaiting2period(((Lineal) c.fieldsList.get(Lineal.class)).getW());
+		if (c.isContainField(Circular.class))
+			MAX_PERIOD = maxWaiting2period(c.getField(Circular.class).getW());
+		else
+			MAX_PERIOD = maxWaiting2period(c.getField(Lineal.class).getW());
 	}
 
 

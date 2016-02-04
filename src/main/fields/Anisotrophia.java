@@ -13,7 +13,12 @@ public class Anisotrophia extends Field {
 	public Vector getValue(Vector M, double t) {
 		return axeOfAnisotropia.multiply(M.dotProduct(axeOfAnisotropia));
 	}
-	
+
+	@Override
+	public Double getW() {
+		return null;
+	}
+
 	public Vector getAxe() {
 		return axeOfAnisotropia;
 	}

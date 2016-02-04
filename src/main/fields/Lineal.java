@@ -15,7 +15,7 @@ public class Lineal extends Field {
 		return direction.multiply(h * Math.cos(w * t));
 	}
 
-	public double getW() {
+	public Double getW() {
 		return w;
 	}
 
