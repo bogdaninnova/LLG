@@ -31,7 +31,7 @@ public class PeriodCounter {
 
 	public double MAX_PERIOD;
 
-	public static boolean isQ = false;
+	public boolean isQ = false;
 
 	private void move(CartesianCalculation c) {
 

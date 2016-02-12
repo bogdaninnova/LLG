@@ -13,7 +13,6 @@ public class CartesianCalculation extends Calculation {
 
 	public ArrayList<Field> fields;
 	private PeriodCounter pc = new PeriodCounter();
-	public ArrayList<Double> energyList = new ArrayList<Double>();
 
 	public CartesianCalculation(Field... fields) {
 		setFields(fields);

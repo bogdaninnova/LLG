@@ -1,9 +1,6 @@
 package main;
 
-import bulkFileEditing.DrawQW;
-import bulkFileEditing.DrawQWSet;
-import bulkFileEditing.FolderEditor;
-import bulkFileEditing.TextWriter;
+import bulkFileEditing.*;
 import main.fields.Anisotrophia;
 import main.fields.Circular;
 import main.fields.Lineal;
@@ -58,7 +55,7 @@ public final class Archive {
         }
     }
 
-    public static void averrageComponents(String path, double h) throws NumberFormatException {
+    public static ArrayList<ArrayList<Double>> averrageComponents(String path, double h) throws NumberFormatException {
 
         //System.out.println(hFolder);
 
@@ -115,11 +112,19 @@ public final class Archive {
                 }
             }
         }
-        TextWriter.writeDoubleList(multiple(listX, 1 / (double) counter), h + " Average X");
-        TextWriter.writeDoubleList(multiple(listY, 1 / (double) counter), h + " Average Y");
-        TextWriter.writeDoubleList(multiple(listZ, 1 / (double) counter), h + " Average Z");
-        TextWriter.writeDoubleList(multiple(listE, 1 / (double) counter), h + " Average E");
+//        TextWriter.writeDoubleList(multiple(listX, 1 / (double) counter), h + " Average X");
+//        TextWriter.writeDoubleList(multiple(listY, 1 / (double) counter), h + " Average Y");
+//        TextWriter.writeDoubleList(multiple(listZ, 1 / (double) counter), h + " Average Z");
+//        TextWriter.writeDoubleList(multiple(listE, 1 / (double) counter), h + " Average E");
 
+        ArrayList<ArrayList<Double>> result = new ArrayList<>();
+
+        result.add(multiple(listX, 1 / (double) counter));
+        result.add(multiple(listY, 1 / (double) counter));
+        result.add(multiple(listZ, 1 / (double) counter));
+        result.add(multiple(listE, 1 / (double) counter));
+
+        return result;
     }
 
     private static ArrayList<Double> multiple(ArrayList<Double> list, double num) {
