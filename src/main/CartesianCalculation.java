@@ -38,7 +38,7 @@ public class CartesianCalculation extends Calculation {
 		for (Field field : fields)
 			this.fields.add(field);
 
-		if (isContainField(Anisotrophia.class))
+		if (!isContainField(Anisotrophia.class))
 			setBeginningLocation(new Vector(0, 0));
 		else
 			setBeginningLocation(new Vector(((Anisotrophia) getField(Anisotrophia.class)).getAxe()));

@@ -8,7 +8,7 @@ import java.util.LinkedList;
 public class PeriodCounter {
 
 	private Vector startDot;
-	private static final double r = Math.pow(10, -2);
+	private static final double r = Math.pow(10, -4);
 	private boolean isLastInside;
 	private boolean isNowInside;
 	private int counter;
@@ -61,7 +61,7 @@ public class PeriodCounter {
 		if (c.t > MAX_PERIOD) {
 			reset(c);
 			isQ = true;
-			System.out.println("Q");
+			System.out.print("Q");
 		}
 	}
 
@@ -99,7 +99,7 @@ public class PeriodCounter {
 				isStartWrite = true;
 			else {
 				counter = LAPS;
-				System.out.println("Q");
+				System.out.print("Q");
 			}
 		}
 

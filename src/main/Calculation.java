@@ -10,7 +10,7 @@ public abstract class Calculation {
 	
 	private static final double sigma = 0 * Math.pow(10, 18);
 	
-	private static final double alpha0 = 0.01;
+	private static final double alpha0 = 0.05;
 	private static final double a = Math.pow(10, -5);
 	private static final double mu1 = 1;
 	private static final double mu2 = 1;

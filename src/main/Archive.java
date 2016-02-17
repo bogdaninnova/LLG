@@ -55,7 +55,7 @@ public final class Archive {
         }
     }
 
-    public static ArrayList<ArrayList<Double>> averrageComponents(String path, double h) throws NumberFormatException {
+    public static ArrayList<ArrayList<Double>> averrageComponents(String path) throws NumberFormatException {
 
         //System.out.println(hFolder);
 
@@ -87,6 +87,7 @@ public final class Archive {
                     }
                 }
                 if (c.contains("M_y")) {
+
                     if (c.contains("theta=0.0;") || c.contains("theta=1.0;")) {
                         listY = addLists(listY, multiple(DrawQW.readDoubleListList(path + "/" + name + "/" + c), 20));
                     } else {
@@ -103,7 +104,7 @@ public final class Archive {
                 }
 
                 if (c.contains("Energy")) {
-                    counter++;
+                    //counter++;
                     if (c.contains("theta=0.0;") || c.contains("theta=1.0;")) {
                         listE = addLists(listE, multiple(DrawQW.readDoubleListList(path + "/" + name + "/" + c), 20));
                     } else {
@@ -118,7 +119,6 @@ public final class Archive {
 //        TextWriter.writeDoubleList(multiple(listE, 1 / (double) counter), h + " Average E");
 
         ArrayList<ArrayList<Double>> result = new ArrayList<>();
-
         result.add(multiple(listX, 1 / (double) counter));
         result.add(multiple(listY, 1 / (double) counter));
         result.add(multiple(listZ, 1 / (double) counter));
@@ -126,6 +126,108 @@ public final class Archive {
 
         return result;
     }
+
+
+
+    public static ArrayList<ArrayList<Double>> averrageComponentsWithout20(String path) throws NumberFormatException {
+
+        //System.out.println(hFolder);
+
+        File folder = new File(path);
+        String[] names = folder.list();
+
+        ArrayList<Double> listX = new ArrayList<Double>();
+        ArrayList<Double> listY = new ArrayList<Double>();
+        ArrayList<Double> listZ = new ArrayList<Double>();
+        ArrayList<Double> listE = new ArrayList<Double>();
+        for (int i = 0; i < 200; i++) {
+            listX.add(0d);
+            listY.add(0d);
+            listZ.add(0d);
+            listE.add(0d);
+        }
+        int counter = 0;
+        for(String name : names) {
+            File file = new File(path + "/" + name);
+            String[] cons = file.list();
+            for(String c : cons) {
+
+                if (c.contains("M_x"))
+                   listX = addLists(listX, DrawQW.readDoubleListList(path + "/" + name + "/" + c));
+
+                if (c.contains("M_y"))
+                     listY = addLists(listY, DrawQW.readDoubleListList(path + "/" + name + "/" + c));
+
+                if (c.contains("M_z")) {
+                    counter++;
+                    listZ = addLists(listZ, DrawQW.readDoubleListList(path + "/" + name + "/" + c));
+                }
+
+                if (c.contains("Energy"))
+                    listE = addLists(listE, DrawQW.readDoubleListList(path + "/" + name + "/" + c));
+            }
+        }
+        ArrayList<ArrayList<Double>> result = new ArrayList<>();
+        result.add(multiple(listX, 1 / (double) counter));
+        result.add(multiple(listY, 1 / (double) counter));
+        result.add(multiple(listZ, 1 / (double) counter));
+        result.add(multiple(listE, 1 / (double) counter));
+
+        return result;
+    }
+
+
+    public static ArrayList<ArrayList<Double>> averrageComponentsForRandom(String path, int dots) throws NumberFormatException {
+
+        File folder = new File(path);
+        String[] names = folder.list();
+
+        ArrayList<Double> listX = new ArrayList<Double>();
+        ArrayList<Double> listY = new ArrayList<Double>();
+        ArrayList<Double> listZ = new ArrayList<Double>();
+        ArrayList<Double> listE = new ArrayList<Double>();
+        for (int i = 0; i < 200; i++) {
+            listX.add(0d);
+            listY.add(0d);
+            listZ.add(0d);
+            listE.add(0d);
+        }
+        int counter = 0;
+        System.out.println();
+        for(String name : names) {
+            File file = new File(path + "/" + name);
+            String[] cons = file.list();
+            for(String c : cons) {
+
+                if (c.contains("M_x"))
+                    listX = addLists(listX, DrawQW.readDoubleListList(path + "/" + name + "/" + c));
+
+                if (c.contains("M_y"))
+                     listY = addLists(listY, DrawQW.readDoubleListList(path + "/" + name + "/" + c));
+
+                if (c.contains("M_z"))
+                    listZ = addLists(listZ, DrawQW.readDoubleListList(path + "/" + name + "/" + c));
+
+                if (c.contains("Energy")) {
+                    counter++;
+                    listE = addLists(listE, DrawQW.readDoubleListList(path + "/" + name + "/" + c));
+                }
+
+                if (counter == dots) break;
+            }
+            if (counter == dots) break;
+        }
+        ArrayList<ArrayList<Double>> result = new ArrayList<>();
+        result.add(multiple(listX, 1 / (double) counter));
+        result.add(multiple(listY, 1 / (double) counter));
+        result.add(multiple(listZ, 1 / (double) counter));
+        result.add(multiple(listE, 1 / (double) counter));
+
+        return result;
+    }
+
+
+
 
     private static ArrayList<Double> multiple(ArrayList<Double> list, double num) {
         ArrayList<Double> newList = new ArrayList<Double>();
@@ -148,7 +250,7 @@ public final class Archive {
         return list;
     }
 
-    public static void bulkWright(String path, String resultName) {
+    public static void bulkWright(String path, String contain, String resultName) {
         DrawQWSet dr = new DrawQWSet();
         Vector easyAxe = new Vector(1, 0, 0);
 
@@ -161,21 +263,20 @@ public final class Archive {
             File file = new File(path + "/" + name);
             String[] cons = file.list();
             for(String c : cons)
-                if (c.contains("Energy")) {
+                if (c.contains(contain)) {
                     double[] data = FolderEditor.parseName(name);
-                    double angle = Math.acos(new Vector(data[1] * Math.PI, data[2]* 2 * Math.PI).dotProduct(easyAxe)) / Math.PI;
+                    double angle = Math.acos(new Vector(data[1], data[2]).dotProduct(easyAxe)) / Math.PI;
                     int d = dr.addTrack(path + "/" + name + "/" + c);
                     for (int i = 0; i < d; i++) {
                         listAngles.add(angle);
                         listTheta.add(data[1]);
                         listFi.add(data[2]);
                     }
-
                 }
         }
-        TextWriter.writeDoubleList(listAngles, "angles");
-        TextWriter.writeDoubleList(listTheta, "theta");
-        TextWriter.writeDoubleList(listFi, "fi");
+//        TextWriter.writeDoubleList(listAngles, "angles");
+//        TextWriter.writeDoubleList(listTheta, "theta");
+//        TextWriter.writeDoubleList(listFi, "fi");
         dr.wright();
         dr.save(resultName);
     }

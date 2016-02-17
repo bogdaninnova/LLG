@@ -1,10 +1,15 @@
 #Don't commit IDEA files
 *.iml
 .idea/
-*.txt
 #Don't commit logs
 *.log*
+#Don't commit counted data
 *.PNG
+*.png
+*.xls
+*.txt
+res/
 #Don't commit Java class files and build artifacts
 target/
 bin/
+

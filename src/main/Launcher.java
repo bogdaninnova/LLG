@@ -4,28 +4,45 @@ import bulkFileEditing.ExcelWriter;
 import bulkFileEditing.TextWriter;
 import main.fields.Anisotrophia;
 import main.fields.Circular;
-import main.fields.Lineal;
-import painting.Draw;
 
 import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Random;
 
 public class Launcher {
 
 	public static void main(String...strings) {
 //		String linealPath = "D:\\Downloads\\lineal\\lineal\\h = ";
-//		String circularPath = "D:\\Downloads\\circular\\circular\\h = ";
+		String circularPath = "C:\\IDEA\\LLG\\res\\circular\\h = 0.01";
+//		String circularPath = "C:\\IDEA\\LLG\\res\\circular\\h = 0.05";
 //		Archive.getMaximalDot(linealPath + 0.01);
 
 	//double w = 0.69	;
-		for (double w = 0.69; w < 0.71; w = (round(w + 0.001, 3)))
-			oneParticle(Math.acos(2 * 0.85 - 1), 0.25 * 2 * Math.PI, 0.01, w, "w=" + w);
+//		for (double w = 0.69; w < 0.71; w = (round(w + 0.001, 3)))
+//			oneParticle(Math.acos(2 * 0.85 - 1), 0.25 * 2 * Math.PI, 0.01, w, "w=" + w);
 
 
-		//character(0.01, "lineal");
+//		Archive.bulkWright(circularPath, "Energy", "Energy h = 0.01");
+//		Archive.bulkWright(circularPath, "M_x", "M_x h = 0.01");
+//		Archive.bulkWright(circularPath, "M_y", "M_y h = 0.01");
+//		Archive.bulkWright(circularPath, "M_z", "M_z h = 0.01");
+
+
+
+//		ExcelWriter ew = new ExcelWriter();
+//		ew.addFewColumns("all", Archive.averrageComponentsWithout20(circularPath));
+//		ew.write("h=0.01");
+
+
+
+
+
+		character(0.001, "circular");
+		character(0.005, "circular");
+//		character(0.25, "circular");
 
 	}
 
@@ -38,9 +55,9 @@ public class Launcher {
 		for (double h = 0.05; h <= 0.3;  h = round(h + 0.05, 2)) {
 			//Archive.bulkWright(linealPath + h, h + " lineal");
 
-			excelWriter.addFewColumns("h="+h, Archive.averrageComponents(linealPath + h, h));
+			excelWriter.addFewColumns("h="+h, Archive.averrageComponents(linealPath + h));
 		}
-		excelWriter.addFewColumns("h=0.01", Archive.averrageComponents(linealPath + 0.01, 0.01));
+		excelWriter.addFewColumns("h=0.01", Archive.averrageComponents(linealPath + 0.01));
 		excelWriter.write("Lineal");
 	}
 
@@ -48,15 +65,15 @@ public class Launcher {
 
 		CartesianCalculation c = new CartesianCalculation(
 				new Anisotrophia(theta, fi),
-				//new Circular(w, h));
-				new Lineal( new Vector(1,0,0), w, h));
+				new Circular(w, h));
+				//new Lineal( new Vector(1,0,0), w, h));
 
 		//c.run(500, 500);
 		c.run();
 
-		new Draw(c.getArray(),
-				((Anisotrophia) c.getField(Anisotrophia.class)).getAxe(),
-				0.4 * Math.PI, 0.4 * Math.PI, 0, path).drawTraectory(true);
+//		new Draw(c.getArray(),
+//				((Anisotrophia) c.getField(Anisotrophia.class)).getAxe(),
+//				0.4 * Math.PI, 0.4 * Math.PI, 0, path).drawTraectory(true);
 
 		Object[] result = {c.getEnergy(), c.getM_aver()};
 
@@ -66,7 +83,7 @@ public class Launcher {
 
 	public static void character (double h, String fieldType) {
 
-		double angleStep = 0.05;
+		double angleStep = 0.01;
 		String destination = "res/" + fieldType;
 		createFolder(destination);
 		String path = destination + "/h = " + h;
@@ -80,12 +97,12 @@ public class Launcher {
 //		oneIteration(h, 0, 0, fieldType, anis0Path, track);
 
 		double angleTheta, angleFi;
-		for (double fi = 0.25; fi <= 0.25; fi = round(fi + angleStep, 2))
-			for (double theta = 0.85; theta <= 0.85; theta = round(theta + angleStep, 2)) {
+		double fi = 0;//for (double fi = 0; fi < 1; fi = round(fi + angleStep, 2))
+			for (double theta = 0; theta <= 1; theta = round(theta + angleStep, 3)) {
 
-				if (((theta == 0.5) && (fi == 0)) || ((theta == 0.5) && (fi == 0.5)))
-					if (fieldType.equals("lineal"))
-						continue;
+//				if (((theta == 0.5) && (fi == 0)) || ((theta == 0.5) && (fi == 0.5)))
+//					if (fieldType.equals("lineal"))
+//						continue;
 
 				angleTheta = Math.acos(2 * theta - 1);
 				angleFi = 2 * Math.PI * fi;
@@ -108,6 +125,28 @@ public class Launcher {
 
 
 
+	public static void characterRandom (double h, String fieldType) {
+		String destination = "res/" + fieldType;
+		createFolder(destination);
+		String path = destination + "/h = " + h;
+		String track = "track";
+		createFolder(path);
+		int k = 400;
+		Random rand = new Random();
+		double angleTheta, angleFi;
+		while(k --> 0) {
+				angleTheta = Math.acos(2 * rand.nextDouble() - 1);
+				angleFi = 2 * Math.PI * rand.nextDouble();
+				System.out.println(k);
+				String anisPath = path + "/h = " + h + ";theta=" + angleTheta + ";fi=" + angleFi;
+				createFolder(anisPath);
+				createFolder(anisPath + "/" + track);
+				oneIteration(h, angleTheta, angleFi, fieldType, anisPath, track);
+			}
+	}
+
+
+
 	public static void oneIteration(double h, double angleTheta, double angleFi, String fieldType, String anisPath, String track) {
 		ArrayList<Double> eList = new ArrayList<Double>();
 		ArrayList<Vector> mList = new ArrayList<Vector>();
@@ -123,6 +162,21 @@ public class Launcher {
 
 	}
 
+
+	public static void oneIteration05(double h, double angleTheta, double angleFi, String fieldType, String anisPath, String track) {
+		ArrayList<Double> eList = new ArrayList<Double>();
+		ArrayList<Vector> mList = new ArrayList<Vector>();
+		for (double w = 0.5; w <= 1.5; w = (round(w + 0.01, 2))) {
+			System.out.println("Field Type = " + fieldType +"; h = " + h + "theta = " + angleTheta + ", fi = " + angleFi + ", w = " + w);
+			String trackName = anisPath + "/" + track + "/h = "+ h +", theta = " + angleTheta + ", fi = " + angleFi + ", w = " + w;
+			Object[] result = oneParticle(angleTheta, angleFi, h, w, trackName);
+			eList.add((double)result[0]);
+			mList.add((Vector) result[1]);
+		}
+		TextWriter.writeDoubleList(eList, anisPath + "/Energy");
+		TextWriter.writeTraectorysCoordinates(mList, anisPath + "/Average M");
+
+	}
 
 
 	public static double round(double value, int places) {
