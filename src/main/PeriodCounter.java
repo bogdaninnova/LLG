@@ -1,6 +1,7 @@
 package main;
 
 import main.fields.Circular;
+import main.fields.Elliptical;
 import main.fields.Lineal;
 
 import java.util.LinkedList;
@@ -8,7 +9,7 @@ import java.util.LinkedList;
 public class PeriodCounter {
 
 	private Vector startDot;
-	private static final double r = Math.pow(10, -4);
+	private static final double r = Math.pow(10, -3);
 	private boolean isLastInside;
 	private boolean isNowInside;
 	private int counter;
@@ -125,8 +126,11 @@ public class PeriodCounter {
 
 		if (c.isContainField(Circular.class))
 			omega = c.getField(Circular.class).getW();
-		else
+		else if (c.isContainField(Lineal.class))
 			omega = c.getField(Lineal.class).getW();
+		else if (c.isContainField(Elliptical.class))
+			omega = c.getField(Elliptical.class).getW();
+
 		startDot = c.M.clone();
 		isLastInside = true;
 		time = 0;
@@ -201,8 +205,10 @@ public class PeriodCounter {
 
 		if (c.isContainField(Circular.class))
 			MAX_PERIOD = maxWaiting2period(c.getField(Circular.class).getW());
-		else
+		else if (c.isContainField(Lineal.class))
 			MAX_PERIOD = maxWaiting2period(c.getField(Lineal.class).getW());
+		else if (c.isContainField(Elliptical.class))
+			MAX_PERIOD = maxWaiting2period(c.getField(Elliptical.class).getW());
 	}
 
 

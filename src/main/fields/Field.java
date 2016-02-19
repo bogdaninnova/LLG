@@ -5,7 +5,8 @@ import main.Vector;
 public abstract class Field {
 	
 	private double dt = Math.pow(10, -8);
-	
+	protected double w, h;
+
 	public abstract Vector getValue(Vector M, double t);
 	
 	public Vector getDerivative(Vector M, double t) {
@@ -15,6 +16,12 @@ public abstract class Field {
 		return dF2.multiply(1 / dt);
 	}
 
-	public abstract Double getW();
+	public Double getW() {
+		return w;
+	}
+
+	public Double getH() {
+		return h;
+	}
 	
 }

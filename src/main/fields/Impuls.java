@@ -45,7 +45,7 @@ public class Impuls extends Field {
 		return Math.pow(10, 10);
 	}
 	
-	public double getH() {
+	public Double getH() {
 		double h = -999;
 		for (ImpulsPart imPart : list) 
 			if (h < imPart.h0)

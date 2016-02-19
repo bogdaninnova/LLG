@@ -18,6 +18,7 @@ public class Anisotrophia extends Field {
 	public Double getW() {
 		return null;
 	}
+	public Double getH() { return null; }
 
 	public Vector getAxe() {
 		return axeOfAnisotropia;

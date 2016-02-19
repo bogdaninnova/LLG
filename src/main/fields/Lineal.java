@@ -4,7 +4,6 @@ import main.Vector;
 
 public class Lineal extends Field {
 
-	private double w, h;
 	private Vector direction;
 
 	public Lineal(Vector direction, double w, double h) {
@@ -15,14 +14,6 @@ public class Lineal extends Field {
 		return direction.multiply(h * Math.cos(w * t));
 	}
 
-	public Double getW() {
-		return w;
-	}
-
-	public double getH() {
-		return h;
-	}
-	
 	public Vector getDirection() {
 		return direction;
 	}

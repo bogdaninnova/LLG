@@ -3,7 +3,7 @@ package main;
 import bulkFileEditing.ExcelWriter;
 import bulkFileEditing.TextWriter;
 import main.fields.Anisotrophia;
-import main.fields.Circular;
+import main.fields.Elliptical;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -16,33 +16,38 @@ public class Launcher {
 
 	public static void main(String...strings) {
 //		String linealPath = "D:\\Downloads\\lineal\\lineal\\h = ";
-		String circularPath = "C:\\IDEA\\LLG\\res\\circular\\h = 0.01";
+		String circularPath = "C:\\IDEA\\LLG\\res\\lineal\\h = ";
 //		String circularPath = "C:\\IDEA\\LLG\\res\\circular\\h = 0.05";
 //		Archive.getMaximalDot(linealPath + 0.01);
+
+
+		double h = 0.05;
 
 	//double w = 0.69	;
 //		for (double w = 0.69; w < 0.71; w = (round(w + 0.001, 3)))
 //			oneParticle(Math.acos(2 * 0.85 - 1), 0.25 * 2 * Math.PI, 0.01, w, "w=" + w);
 
 
-//		Archive.bulkWright(circularPath, "Energy", "Energy h = 0.01");
-//		Archive.bulkWright(circularPath, "M_x", "M_x h = 0.01");
-//		Archive.bulkWright(circularPath, "M_y", "M_y h = 0.01");
-//		Archive.bulkWright(circularPath, "M_z", "M_z h = 0.01");
-
-
-
+//		Archive.bulkWright(circularPath + h, "Energy", "Energy h = " + h);
+//		Archive.bulkWright(circularPath + h, "M_x", "M_x h = " + h);
+//		Archive.bulkWright(circularPath + h, "M_y", "M_y h = " + h);
+//		Archive.bulkWright(circularPath + h, "M_z", "M_z h = " + h);
+////
+////
+////
 //		ExcelWriter ew = new ExcelWriter();
-//		ew.addFewColumns("all", Archive.averrageComponentsWithout20(circularPath));
-//		ew.write("h=0.01");
+//		ew.addFewColumns("all", Archive.averrageComponents(circularPath + h));
+//		ew.write("h = "  + h);
 
 
 
 
+		character(0.01, "elliptical");
+		character(0.05, "elliptical");
+		character(0.001, "elliptical");
+		character(0.005, "elliptical");
 
-		character(0.001, "circular");
-		character(0.005, "circular");
-//		character(0.25, "circular");
+//		character(0.05, "lineal");
 
 	}
 
@@ -65,7 +70,8 @@ public class Launcher {
 
 		CartesianCalculation c = new CartesianCalculation(
 				new Anisotrophia(theta, fi),
-				new Circular(w, h));
+				//new Circular(w, h));
+				new Elliptical(0.5, w, h));
 				//new Lineal( new Vector(1,0,0), w, h));
 
 		//c.run(500, 500);
@@ -83,7 +89,7 @@ public class Launcher {
 
 	public static void character (double h, String fieldType) {
 
-		double angleStep = 0.01;
+		double angleStep = 0.05;
 		String destination = "res/" + fieldType;
 		createFolder(destination);
 		String path = destination + "/h = " + h;
@@ -91,14 +97,14 @@ public class Launcher {
 		createFolder(path);
 
 
-//		String anis0Path = path + "/h = " + h + ";theta=" + 0.0 + ";fi=" + 0.0;
-//		createFolder(anis0Path);
-//		createFolder(anis0Path + "/" + track);
-//		oneIteration(h, 0, 0, fieldType, anis0Path, track);
+		String anis0Path = path + "/h = " + h + ";theta=" + 0.0 + ";fi=" + 0.0;
+		createFolder(anis0Path);
+		createFolder(anis0Path + "/" + track);
+		oneIteration(h, 0, 0, fieldType, anis0Path, track);
 
 		double angleTheta, angleFi;
-		double fi = 0;//for (double fi = 0; fi < 1; fi = round(fi + angleStep, 2))
-			for (double theta = 0; theta <= 1; theta = round(theta + angleStep, 3)) {
+		for (double fi = 0; fi < 1; fi = round(fi + angleStep, 2))
+			for (double theta = angleStep; theta < 1; theta = round(theta + angleStep, 3)) {
 
 //				if (((theta == 0.5) && (fi == 0)) || ((theta == 0.5) && (fi == 0.5)))
 //					if (fieldType.equals("lineal"))
@@ -117,10 +123,10 @@ public class Launcher {
 
 
 
-//		String anis1Path = path + "/h = " + h + ";theta=" + 1.0 + ";fi=" + 0.0;
-//		createFolder(anis1Path);
-//		createFolder(anis1Path + "/" + track);
-//		oneIteration(h, Math.PI, 0, fieldType, anis1Path, track);
+		String anis1Path = path + "/h = " + h + ";theta=" + Math.PI + ";fi=" + 0.0;
+		createFolder(anis1Path);
+		createFolder(anis1Path + "/" + track);
+		oneIteration(h, Math.PI, 0, fieldType, anis1Path, track);
 	}
 
 
