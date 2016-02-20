@@ -72,7 +72,9 @@ public final class Archive {
             listZ.add(0d);//for lineal field need to make something TODO
             listE.add(0d);
         }
-        int counter = 40;
+        int counter = 0;
+        if (path.contains("lineal"))
+            counter = 2;
         System.out.println();
         for(String name : names) {
             File file = new File(path + "/" + name);
@@ -80,7 +82,7 @@ public final class Archive {
             for(String c : cons) {
 
                 if (c.contains("M_x")) {
-                    if (c.contains("theta=0.0;") || c.contains("theta=1.0;")) {
+                    if (name.contains("theta=0.0;") || name.contains("theta=1.0;")) {
                         listX = addLists(listX, multiple(DrawQW.readDoubleListList(path + "/" + name + "/" + c), 20));
                     } else {
                         listX = addLists(listX, DrawQW.readDoubleListList(path + "/" + name + "/" + c));
@@ -88,15 +90,14 @@ public final class Archive {
                 }
                 if (c.contains("M_y")) {
 
-                    if (c.contains("theta=0.0;") || c.contains("theta=1.0;")) {
+                    if (name.contains("theta=0.0;") || name.contains("theta=1.0;")) {
                         listY = addLists(listY, multiple(DrawQW.readDoubleListList(path + "/" + name + "/" + c), 20));
                     } else {
                         listY = addLists(listY, DrawQW.readDoubleListList(path + "/" + name + "/" + c));
                     }
                 }
                 if (c.contains("M_z")) {
-                    counter++;
-                    if (c.contains("theta=0.0;") || c.contains("theta=1.0;")) {
+                    if (name.contains("theta=0.0;") || name.contains("theta=1.0;")) {
                         listZ = addLists(listZ, multiple(DrawQW.readDoubleListList(path + "/" + name + "/" + c), 20));
                     } else {
                         listZ = addLists(listZ, DrawQW.readDoubleListList(path + "/" + name + "/" + c));
@@ -104,11 +105,12 @@ public final class Archive {
                 }
 
                 if (c.contains("Energy")) {
-                    //counter++;
-                    if (c.contains("theta=0.0;") || c.contains("theta=1.0;")) {
+                    if (name.contains("theta=0.0;") || name.contains("theta=3.141592653")) {
                         listE = addLists(listE, multiple(DrawQW.readDoubleListList(path + "/" + name + "/" + c), 20));
+                        counter += 20;
                     } else {
                         listE = addLists(listE, DrawQW.readDoubleListList(path + "/" + name + "/" + c));
+                        counter++;
                     }
                 }
             }
@@ -117,6 +119,8 @@ public final class Archive {
 //        TextWriter.writeDoubleList(multiple(listY, 1 / (double) counter), h + " Average Y");
 //        TextWriter.writeDoubleList(multiple(listZ, 1 / (double) counter), h + " Average Z");
 //        TextWriter.writeDoubleList(multiple(listE, 1 / (double) counter), h + " Average E");
+
+        System.out.println(counter);
 
         ArrayList<ArrayList<Double>> result = new ArrayList<>();
         result.add(multiple(listX, 1 / (double) counter));

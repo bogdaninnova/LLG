@@ -4,6 +4,7 @@ import bulkFileEditing.ExcelWriter;
 import bulkFileEditing.TextWriter;
 import main.fields.Anisotrophia;
 import main.fields.Elliptical;
+import painting.Draw;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -15,9 +16,15 @@ import java.util.Random;
 public class Launcher {
 
 	public static void main(String...strings) {
-//		String linealPath = "D:\\Downloads\\lineal\\lineal\\h = ";
-		String circularPath = "C:\\IDEA\\LLG\\res\\lineal\\h = ";
+
+
+		String fieldType = "lineal";
+
+
+//		String circularPath = "C:\\IDEA\\LLG\\res\\circular\\h = ";
+//		String linealPath = "C:\\IDEA\\LLG\\res\\lineal\\h = ";
 //		String circularPath = "C:\\IDEA\\LLG\\res\\circular\\h = 0.05";
+		String path = "C:\\IDEA\\LLG\\res\\" + fieldType + "\\h = ";
 //		Archive.getMaximalDot(linealPath + 0.01);
 
 
@@ -35,17 +42,17 @@ public class Launcher {
 ////
 ////
 ////
-//		ExcelWriter ew = new ExcelWriter();
-//		ew.addFewColumns("all", Archive.averrageComponents(circularPath + h));
-//		ew.write("h = "  + h);
+		ExcelWriter ew = new ExcelWriter();
+		ew.addFewColumns("h = "  + h, Archive.averrageComponents(path + h));
+		ew.write(fieldType + "; h = "  + h);
 
 
 
 
-		character(0.01, "elliptical");
-		character(0.05, "elliptical");
-		character(0.001, "elliptical");
-		character(0.005, "elliptical");
+//		character(0.1, "circular");
+//		character(0.2, "circular");
+//		character(0.3, "circular");
+//		character(0.005, "elliptical");
 
 //		character(0.05, "lineal");
 
@@ -77,9 +84,9 @@ public class Launcher {
 		//c.run(500, 500);
 		c.run();
 
-//		new Draw(c.getArray(),
-//				((Anisotrophia) c.getField(Anisotrophia.class)).getAxe(),
-//				0.4 * Math.PI, 0.4 * Math.PI, 0, path).drawTraectory(true);
+		new Draw(c.getArray(),
+				((Anisotrophia) c.getField(Anisotrophia.class)).getAxe(),
+				0.4 * Math.PI, 0.4 * Math.PI, 0, path).drawTraectory(true);
 
 		Object[] result = {c.getEnergy(), c.getM_aver()};
 
@@ -104,7 +111,7 @@ public class Launcher {
 
 		double angleTheta, angleFi;
 		for (double fi = 0; fi < 1; fi = round(fi + angleStep, 2))
-			for (double theta = angleStep; theta < 1; theta = round(theta + angleStep, 3)) {
+			for (double theta = angleStep; theta < 1; theta = round(theta + angleStep, 2)) {
 
 //				if (((theta == 0.5) && (fi == 0)) || ((theta == 0.5) && (fi == 0.5)))
 //					if (fieldType.equals("lineal"))
