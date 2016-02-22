@@ -1,5 +1,6 @@
 package main;
 
+import bulkFileEditing.FolderEditor;
 import bulkFileEditing.TextWriter;
 import main.fields.Anisotrophia;
 import main.fields.Circular;
@@ -19,14 +20,20 @@ public class Launcher {
 	public static void main(String...strings) {
 
 
-		String fieldType = "circular";
+		//String fieldType = "circular";
 		//String fieldType = "elliptical";
-		//String fieldType = "lineal";
+		String fieldType = "lineal";
 
 		String path = "C:\\IDEA\\LLG\\res\\" + fieldType + "\\h = ";
-		double h = 0.1;
+		double h = 0.001;
 
-		Archive.createGraphics(path + h);
+		//Archive.createGraphics(path + h);
+
+		double[] array = new double[]{0.001, 0.005, 0.01, 0.05, 0.1, 0.2, 0.3};
+
+		for (double d : array)
+			FolderEditor.deleteFiles(path + d, ".png", "track");
+
 
 //		Archive.bulkWright(path + h, "Energy", "Energy, field type = " + fieldType + ", h = " + h);
 //		Archive.bulkWright(circularPath + h, "M_x", "M_x h = " + h);

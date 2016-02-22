@@ -29,7 +29,7 @@ public class FolderEditor {
         }
     }
 
-    public static void deleteFiles(String path, String patternForDeleting) {
+    public static void deleteFiles(String path, String... patternForDeleting) {
 
         File folder = new File(path);
         String[] names = folder.list();
@@ -38,14 +38,20 @@ public class FolderEditor {
             File folder2 = new File(path + "/" + name);
             String[] cons = folder2.list();
             for(String c : cons) {
-                if (c.contains(patternForDeleting)) {
+                if (isContainsPattern(c, patternForDeleting)) {
                     System.out.println(path + "/" + name + "/" + c);
                     File deleteFile = new File(path + "/" + name + "/" + c);
                     deleteDirectory(deleteFile);
                 }
             }
         }
+    }
 
+    private static boolean isContainsPattern(String name, String... patternForDeleting) {
+        for (String pattern : patternForDeleting)
+            if (name.contains(pattern))
+                return true;
+        return false;
     }
 
     private static boolean deleteDirectory(File directory) {
