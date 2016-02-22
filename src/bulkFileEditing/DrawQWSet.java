@@ -18,7 +18,7 @@ public class DrawQWSet {
 
 
 
-    private Set<ArrayList<Double>> set = new HashSet<ArrayList<Double>>();
+    private Set<ArrayList<Double>> set = new HashSet<>();
 
     double step;
     double coefQ;
@@ -28,7 +28,7 @@ public class DrawQWSet {
         g.setStroke(new BasicStroke(3));
     }
 
-    public void wright() {
+    private void wright() {
 
         step = (double) sizeW / (double) set.iterator().next().size();
         coefQ = (double) sizeH / getMaxFromSet(set);
@@ -37,23 +37,29 @@ public class DrawQWSet {
             wright(list, g, Color.BLACK);
     }
 
-    public int addTrack(String path) {
+    public int addTrackWithJump(String path) {
         int res = -1;
         try {
             ArrayList<Double> list = readDoubleListList(path);
             set.add(list);
             res = getJumpW(list);
-            //System.out.println("W = " + ]);
-            // System.out.println("Q = " +  + "\n");
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (NumberFormatException | IOException e) {
             e.printStackTrace();
         }
         return res;
     }
 
+    public void addTrack(String path) {
+        try {
+            ArrayList<Double> list = readDoubleListList(path);
+            set.add(list);
+        } catch (NumberFormatException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void save(String name) {
+        wright();
         Draw.save(bi, new File(name + ".png"));
     }
 
@@ -93,17 +99,9 @@ public class DrawQWSet {
 
     private static double getMaxFromTrack(ArrayList<Double> list) {
         double max = 0;
-        double step = 0;
-        double w = 0;
-        ListIterator<Double> iter = list.listIterator();
-        while (iter.hasNext()) {
-            double current = iter.next();
-            step++;
-            if (current > max) {
+        for (Double current : list)
+            if (current > max)
                 max = current;
-                w = step;
-            }
-        }
         return max;
     }
 
@@ -113,12 +111,12 @@ public class DrawQWSet {
 
         ListIterator<Double> iter = list.listIterator();
         double ePrev = iter.next();
-        double eThis = 0;
+        double eThis;
         while (iter.hasNext()) {
             step++;
             eThis = iter.next();
             if ((ePrev * 5 < eThis) && (step > 10)) {
-                System.out.println(((double) step) / 100);
+                System.out.println((step) / 100);
                 counter++;
             }
             ePrev = eThis;
@@ -131,7 +129,7 @@ public class DrawQWSet {
     private ArrayList<Double> readDoubleListList(String path) throws NumberFormatException, IOException {
 
         BufferedReader in = new BufferedReader(new FileReader(new File(path)));
-        ArrayList<Double> list = new ArrayList<Double>();
+        ArrayList<Double> list = new ArrayList<>();
 
         String a;
 

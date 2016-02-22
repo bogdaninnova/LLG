@@ -1,10 +1,11 @@
 package main;
 
-import bulkFileEditing.*;
+import bulkFileEditing.DrawQW;
+import bulkFileEditing.DrawQWSet;
+import bulkFileEditing.FolderEditor;
+import bulkFileEditing.TextWriter;
 import main.fields.Anisotrophia;
-import main.fields.Circular;
 import main.fields.Lineal;
-import painting.Draw;
 
 import java.io.*;
 import java.math.BigDecimal;
@@ -12,18 +13,14 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.ListIterator;
 
-/**
- * Created by bope0915 on 1/27/2016.
- */
 public final class Archive {
     private Archive() {}
 
     public static void Q_w(double h, double w1, double w2) {
         CartesianCalculation c = new CartesianCalculation();
-        ArrayList<Double> wList = new ArrayList<Double>();
-        ArrayList<Vector> mList = new ArrayList<Vector>();
+        ArrayList<Double> wList = new ArrayList<>();
+        ArrayList<Vector> mList = new ArrayList<>();
         for (double w = w1; w <= w2; w = round(w + 0.01, 2)) {
             double wSum = 0;
             Vector m_aver = new Vector();
@@ -62,14 +59,14 @@ public final class Archive {
         File folder = new File(path);
         String[] names = folder.list();
 
-        ArrayList<Double> listX = new ArrayList<Double>();
-        ArrayList<Double> listY = new ArrayList<Double>();
-        ArrayList<Double> listZ = new ArrayList<Double>();
-        ArrayList<Double> listE = new ArrayList<Double>();
+        ArrayList<Double> listX = new ArrayList<>();
+        ArrayList<Double> listY = new ArrayList<>();
+        ArrayList<Double> listZ = new ArrayList<>();
+        ArrayList<Double> listE = new ArrayList<>();
         for (int i = 0; i < 200; i++) {
             listX.add(0d);
             listY.add(0d);
-            listZ.add(0d);//for lineal field need to make something TODO
+            listZ.add(0d);
             listE.add(0d);
         }
         int counter = 0;
@@ -82,7 +79,7 @@ public final class Archive {
             for(String c : cons) {
 
                 if (c.contains("M_x")) {
-                    if (name.contains("theta=0.0;") || name.contains("theta=1.0;")) {
+                    if ((name.contains("theta=0.0;") || name.contains("theta=1.0;")) && (path.contains("lineal") || path.contains("elliptical"))) {
                         listX = addLists(listX, multiple(DrawQW.readDoubleListList(path + "/" + name + "/" + c), 20));
                     } else {
                         listX = addLists(listX, DrawQW.readDoubleListList(path + "/" + name + "/" + c));
@@ -90,14 +87,14 @@ public final class Archive {
                 }
                 if (c.contains("M_y")) {
 
-                    if (name.contains("theta=0.0;") || name.contains("theta=1.0;")) {
+                    if ((name.contains("theta=0.0;") || name.contains("theta=1.0;")) && (path.contains("lineal") || path.contains("elliptical"))) {
                         listY = addLists(listY, multiple(DrawQW.readDoubleListList(path + "/" + name + "/" + c), 20));
                     } else {
                         listY = addLists(listY, DrawQW.readDoubleListList(path + "/" + name + "/" + c));
                     }
                 }
                 if (c.contains("M_z")) {
-                    if (name.contains("theta=0.0;") || name.contains("theta=1.0;")) {
+                    if ((name.contains("theta=0.0;") || name.contains("theta=1.0;")) && (path.contains("lineal") || path.contains("elliptical"))) {
                         listZ = addLists(listZ, multiple(DrawQW.readDoubleListList(path + "/" + name + "/" + c), 20));
                     } else {
                         listZ = addLists(listZ, DrawQW.readDoubleListList(path + "/" + name + "/" + c));
@@ -105,7 +102,7 @@ public final class Archive {
                 }
 
                 if (c.contains("Energy")) {
-                    if (name.contains("theta=0.0;") || name.contains("theta=3.141592653")) {
+                    if ((name.contains("theta=0.0;") || name.contains("theta=3.141592653")) && (path.contains("lineal") || path.contains("elliptical"))) {
                         listE = addLists(listE, multiple(DrawQW.readDoubleListList(path + "/" + name + "/" + c), 20));
                         counter += 20;
                     } else {
@@ -115,10 +112,6 @@ public final class Archive {
                 }
             }
         }
-//        TextWriter.writeDoubleList(multiple(listX, 1 / (double) counter), h + " Average X");
-//        TextWriter.writeDoubleList(multiple(listY, 1 / (double) counter), h + " Average Y");
-//        TextWriter.writeDoubleList(multiple(listZ, 1 / (double) counter), h + " Average Z");
-//        TextWriter.writeDoubleList(multiple(listE, 1 / (double) counter), h + " Average E");
 
         System.out.println(counter);
 
@@ -132,18 +125,15 @@ public final class Archive {
     }
 
 
-
-    public static ArrayList<ArrayList<Double>> averrageComponentsWithout20(String path) throws NumberFormatException {
-
-        //System.out.println(hFolder);
+    public static ArrayList<ArrayList<Double>> averrageComponentsForRandom(String path) throws NumberFormatException {
 
         File folder = new File(path);
         String[] names = folder.list();
 
-        ArrayList<Double> listX = new ArrayList<Double>();
-        ArrayList<Double> listY = new ArrayList<Double>();
-        ArrayList<Double> listZ = new ArrayList<Double>();
-        ArrayList<Double> listE = new ArrayList<Double>();
+        ArrayList<Double> listX = new ArrayList<>();
+        ArrayList<Double> listY = new ArrayList<>();
+        ArrayList<Double> listZ = new ArrayList<>();
+        ArrayList<Double> listE = new ArrayList<>();
         for (int i = 0; i < 200; i++) {
             listX.add(0d);
             listY.add(0d);
@@ -151,53 +141,6 @@ public final class Archive {
             listE.add(0d);
         }
         int counter = 0;
-        for(String name : names) {
-            File file = new File(path + "/" + name);
-            String[] cons = file.list();
-            for(String c : cons) {
-
-                if (c.contains("M_x"))
-                   listX = addLists(listX, DrawQW.readDoubleListList(path + "/" + name + "/" + c));
-
-                if (c.contains("M_y"))
-                     listY = addLists(listY, DrawQW.readDoubleListList(path + "/" + name + "/" + c));
-
-                if (c.contains("M_z")) {
-                    counter++;
-                    listZ = addLists(listZ, DrawQW.readDoubleListList(path + "/" + name + "/" + c));
-                }
-
-                if (c.contains("Energy"))
-                    listE = addLists(listE, DrawQW.readDoubleListList(path + "/" + name + "/" + c));
-            }
-        }
-        ArrayList<ArrayList<Double>> result = new ArrayList<>();
-        result.add(multiple(listX, 1 / (double) counter));
-        result.add(multiple(listY, 1 / (double) counter));
-        result.add(multiple(listZ, 1 / (double) counter));
-        result.add(multiple(listE, 1 / (double) counter));
-
-        return result;
-    }
-
-
-    public static ArrayList<ArrayList<Double>> averrageComponentsForRandom(String path, int dots) throws NumberFormatException {
-
-        File folder = new File(path);
-        String[] names = folder.list();
-
-        ArrayList<Double> listX = new ArrayList<Double>();
-        ArrayList<Double> listY = new ArrayList<Double>();
-        ArrayList<Double> listZ = new ArrayList<Double>();
-        ArrayList<Double> listE = new ArrayList<Double>();
-        for (int i = 0; i < 200; i++) {
-            listX.add(0d);
-            listY.add(0d);
-            listZ.add(0d);
-            listE.add(0d);
-        }
-        int counter = 0;
-        System.out.println();
         for(String name : names) {
             File file = new File(path + "/" + name);
             String[] cons = file.list();
@@ -216,10 +159,7 @@ public final class Archive {
                     counter++;
                     listE = addLists(listE, DrawQW.readDoubleListList(path + "/" + name + "/" + c));
                 }
-
-                if (counter == dots) break;
             }
-            if (counter == dots) break;
         }
         ArrayList<ArrayList<Double>> result = new ArrayList<>();
         result.add(multiple(listX, 1 / (double) counter));
@@ -234,7 +174,7 @@ public final class Archive {
 
 
     private static ArrayList<Double> multiple(ArrayList<Double> list, double num) {
-        ArrayList<Double> newList = new ArrayList<Double>();
+        ArrayList<Double> newList = new ArrayList<>();
         Iterator<Double> iter = list.iterator();
         while (iter.hasNext())
             newList.add(iter.next() * num);
@@ -246,7 +186,7 @@ public final class Archive {
 
         if (list1.size() != list2.size())
             return null;
-        ArrayList<Double> list = new ArrayList<Double>();
+        ArrayList<Double> list = new ArrayList<>();
         Iterator<Double> iter1 = list1.iterator();
         Iterator<Double> iter2 = list2.iterator();
         while (iter1.hasNext())
@@ -256,13 +196,27 @@ public final class Archive {
 
     public static void bulkWright(String path, String contain, String resultName) {
         DrawQWSet dr = new DrawQWSet();
+        File folder = new File(path);
+        String[] names = folder.list();
+        for(String name : names) {
+            File file = new File(path + "/" + name);
+            String[] cons = file.list();
+            for(String c : cons)
+                if (c.contains(contain))
+                    dr.addTrackWithJump(path + "/" + name + "/" + c);
+        }
+        dr.save(resultName);
+    }
+
+    public static void jumpAnalysis(String path, String contain, String resultName) {
+        DrawQWSet dr = new DrawQWSet();
         Vector easyAxe = new Vector(1, 0, 0);
 
         File folder = new File(path);
         String[] names = folder.list();
-        ArrayList<Double> listAngles = new ArrayList<Double>();
-        ArrayList<Double> listTheta = new ArrayList<Double>();
-        ArrayList<Double> listFi = new ArrayList<Double>();
+        ArrayList<Double> listAngles = new ArrayList<>();
+        ArrayList<Double> listTheta = new ArrayList<>();
+        ArrayList<Double> listFi = new ArrayList<>();
         for(String name : names) {
             File file = new File(path + "/" + name);
             String[] cons = file.list();
@@ -270,7 +224,7 @@ public final class Archive {
                 if (c.contains(contain)) {
                     double[] data = FolderEditor.parseName(name);
                     double angle = Math.acos(new Vector(data[1], data[2]).dotProduct(easyAxe)) / Math.PI;
-                    int d = dr.addTrack(path + "/" + name + "/" + c);
+                    int d = dr.addTrackWithJump(path + "/" + name + "/" + c);
                     for (int i = 0; i < d; i++) {
                         listAngles.add(angle);
                         listTheta.add(data[1]);
@@ -278,16 +232,14 @@ public final class Archive {
                     }
                 }
         }
-//        TextWriter.writeDoubleList(listAngles, "angles");
-//        TextWriter.writeDoubleList(listTheta, "theta");
-//        TextWriter.writeDoubleList(listFi, "fi");
-        dr.wright();
+        TextWriter.writeDoubleList(listAngles, "angles");
+        TextWriter.writeDoubleList(listTheta, "theta");
+        TextWriter.writeDoubleList(listFi, "fi");
         dr.save(resultName);
     }
 
-    public static void getMaximalDot(String path) {
+    public static double getMaximalDot(String path) {
 
-        Vector easyAxe = new Vector(1, 0, 0);
         double max = -999;
         double cur = 0;
         File folder = new File(path);
@@ -304,21 +256,14 @@ public final class Archive {
                     }
                 }
         }
+        return max;
     }
 
     private static double getMaxFromTrack(ArrayList<Double> list) {
         double max = 0;
-        double step = 0;
-        double w = 0;
-        ListIterator<Double> iter = list.listIterator();
-        while (iter.hasNext()) {
-            double current = iter.next();
-            step++;
-            if (current > max) {
+        for (Double current : list)
+            if (current > max)
                 max = current;
-                w = step;
-            }
-        }
         return max;
     }
 
@@ -330,11 +275,12 @@ public final class Archive {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        ArrayList<Double> list = new ArrayList<Double>();
+        ArrayList<Double> list = new ArrayList<>();
 
         String a;
 
         try {
+            assert in != null;
             while ((a = in.readLine()) != null)
                 list.add(Double.parseDouble(a));
         } catch (IOException e) {
@@ -344,43 +290,6 @@ public final class Archive {
         return list;
     }
 
-    public static double parametricResonanse(double delta, double h, double w, String path) {
-
-        //Date start = new Date();
-
-        CartesianCalculation c = new CartesianCalculation(
-                new Anisotrophia(0.5 * Math.PI + delta, 0),
-                new Lineal(new Vector(1,0,0), w, h));
-        //c.run(500, 500);
-        c.run();
-
-//		new Draw(c.getArray(),
-//				((Anisotrophia) c.fieldsList.get(Anisotrophia.class)).getAxe(),
-//				0.4 * Math.PI, 0.4 * Math.PI, 0, path).drawTraectory(true);
-
-        return c.getEnergy();
-    }
-
-
-    public static void speedTest(double theta, double fi, double h, double w) {
-        String path = "theta=" + theta + ";fi=" + fi + ";h=" + h + ";w=" + w;
-
-        Date d0 = new Date();
-
-        CartesianCalculation cc = new CartesianCalculation(new Anisotrophia(theta, fi), new Circular(w, h));
-        cc.run(0, 2000);
-        new Draw(cc.getArray(), new Vector(theta, fi), 0.4 * Math.PI, 0.4 * Math.PI, 0, "CC-" + path).drawTraectory(true);
-
-        Date d1 = new Date();
-        System.out.println(d1.getTime()-d0.getTime());
-
-        SphericalCalculation sc = new SphericalCalculation(theta, fi, h, w);
-        sc.run(500, 500);
-        new Draw(sc.array, new Vector(theta, fi), 0.4 * Math.PI, 0.4 * Math.PI, 0, "SC-" + path).drawTraectory(true);
-
-        System.out.println(new Date().getTime()-d1.getTime());
-    }
-
     public static double round(double value, int places) {
         if (places < 0) throw new IllegalArgumentException();
 
@@ -388,4 +297,25 @@ public final class Archive {
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
     }
+
+
+    public static void createGraphics(String path) {
+
+        File folder = new File(path);
+        String[] names = folder.list();
+        String fileName;
+        for(String name : names) {
+            File file = new File(path + "/" + name);
+            String[] cons = file.list();
+            for(String c : cons)
+                if ((c.contains("Average M_") || c.contains("Energy")) && (!c.contains(".png"))) {
+                    DrawQWSet draw = new DrawQWSet();
+                    draw.addTrack(path + "/" + name + "/" + c);
+                    fileName = c.substring(0, c.length() - 4);
+                    draw.save(path + "/" + name + "/" + fileName);
+                }
+        }
+    }
+
+
 }

@@ -9,7 +9,7 @@ import java.util.LinkedList;
 public class PeriodCounter {
 
 	private Vector startDot;
-	private static final double r = Math.pow(10, -3);
+	private static final double r = Math.pow(10, -4);
 	private boolean isLastInside;
 	private boolean isNowInside;
 	private int counter;
@@ -17,9 +17,9 @@ public class PeriodCounter {
 	private boolean isBegin = false;
 
 	private double time;
-	public LinkedList<Vector> list = new LinkedList<Vector>();
+	public LinkedList<Vector> list = new LinkedList<>();
 
-	public LinkedList<Double> energyList = new LinkedList<Double>();
+	public LinkedList<Double> energyList = new LinkedList<>();
 
 	private double omega;
 	private double dt;
@@ -134,12 +134,12 @@ public class PeriodCounter {
 		startDot = c.M.clone();
 		isLastInside = true;
 		time = 0;
-		dt = c.dt;
-		list = new LinkedList<Vector>();
+		dt = Calculation.dt;
+		list = new LinkedList<>();
 
 
 
-		energyList = new LinkedList<Double>();
+		energyList = new LinkedList<>();
 		steps = 0;
 		energy = 0;
 		M_aver = new Vector();
@@ -153,7 +153,7 @@ public class PeriodCounter {
 
 
 	private void raiseEnergy(CartesianCalculation c) {
-		energy += c.getHeff(c.M, c.t).dotProduct(c.dM) / c.dt;
+		energy += c.getHeff(c.M, c.t).dotProduct(c.dM) / Calculation.dt;
 		M_aver = M_aver.plus(c.M);
 		steps++;
 	}
@@ -200,8 +200,8 @@ public class PeriodCounter {
 		time = 0;
 		isQ = false;
 		isStartWrite = false;
-		list = new LinkedList<Vector>();
-		energyList = new LinkedList<Double>();
+		list = new LinkedList<>();
+		energyList = new LinkedList<>();
 
 		if (c.isContainField(Circular.class))
 			MAX_PERIOD = maxWaiting2period(c.getField(Circular.class).getW());
