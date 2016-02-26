@@ -2,18 +2,16 @@ package main;
 
 import bulkFileEditing.FolderEditor;
 import bulkFileEditing.TextWriter;
-import main.fields.Anisotrophia;
+import main.fields.Anisotropy;
 import main.fields.Circular;
 import main.fields.Elliptical;
 import main.fields.Lineal;
 import painting.Draw;
 
-import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Random;
 
 public class Launcher {
 
@@ -21,31 +19,33 @@ public class Launcher {
 
 
 		//String fieldType = "circular";
-		//String fieldType = "elliptical";
-		String fieldType = "lineal";
+		String fieldType = "elliptical";
+		//String fieldType = "lineal";
 
 		String path = "C:\\IDEA\\LLG\\res\\" + fieldType + "\\h = ";
 		double h = 0.001;
 
 		//Archive.createGraphics(path + h);
 
-		double[] array = new double[]{0.001, 0.005, 0.01, 0.05, 0.1, 0.2, 0.3};
-
-		for (double d : array)
-			FolderEditor.deleteFiles(path + d, ".png", "track");
+//		double[] array = new double[]{0.001, 0.005, 0.01, 0.05, 0.1, 0.2, 0.3};
+//
+//		for (double d : array)
+//			FolderEditor.deleteFiles(path + d, ".png", "track");
 
 
 //		Archive.bulkWright(path + h, "Energy", "Energy, field type = " + fieldType + ", h = " + h);
 //		Archive.bulkWright(circularPath + h, "M_x", "M_x h = " + h);
 //		Archive.bulkWright(circularPath + h, "M_y", "M_y h = " + h);
-//		Archive.bulkWright(circularPath + h, "M_z", "M_z h = " + h);
+		Archive.bulkWright(path + h, "M_z", "M_z h = " + h);
 
 //		ExcelWriter ew = new ExcelWriter();
 //		ew.addFewColumns("h = "  + h, Archive.averrageComponents(path + h));
 //		ew.write(fieldType + "; h = "  + h);
 
 
-//		character(0.05, fieldType, true);
+		character(0.4, fieldType, true);
+		character(0.5, fieldType, true);
+		character(0.6, fieldType, true);
 
 	}
 
@@ -54,13 +54,13 @@ public class Launcher {
 		CartesianCalculation c;
 		switch (fieldType) {
 			case "circular" :
-				c = new CartesianCalculation(new Anisotrophia(theta, fi), new Circular(w, h));
+				c = new CartesianCalculation(new Anisotropy(theta, fi), new Circular(w, h));
 				break;
 			case "lineal" :
-				c = new CartesianCalculation(new Anisotrophia(theta, fi), new Lineal( new Vector(1,0,0), w, h));
+				c = new CartesianCalculation(new Anisotropy(theta, fi), new Lineal( new Vector(1,0,0), w, h));
 				break;
 			case "elliptical" :
-				c = new CartesianCalculation(new Anisotrophia(theta, fi), new Elliptical(0.5, w, h));
+				c = new CartesianCalculation(new Anisotropy(theta, fi), new Elliptical(0.5, w, h));
 				break;
 			default:
 				throw new IllegalArgumentException();
@@ -71,7 +71,7 @@ public class Launcher {
 
 		if (isDraw)
 			new Draw(c.getArray(),
-					((Anisotrophia) c.getField(Anisotrophia.class)).getAxe(),
+					((Anisotropy) c.getField(Anisotropy.class)).getAxe(),
 					0.4 * Math.PI, 0.4 * Math.PI, 0, path).drawTraectory(true);
 
 		return new Object[]{c.getEnergy(), c.getM_aver()};
@@ -80,16 +80,17 @@ public class Launcher {
 
 	public static void character (double h, String fieldType, boolean isDraw) {
 
-		double angleStep = 0.01;
+		double angleStep = 0.05;
 		String destination = "res/" + fieldType;
-		createFolder(destination);
+		FolderEditor.createFolder(destination);
 		String path = destination + "/h = " + h;
 		String track = "track";
-		createFolder(path);
+		FolderEditor.createFolder(path);
 
 		String anis0Path = path + "/h = " + h + ";theta=" + 0.0 + ";fi=" + 0.0;
-		createFolder(anis0Path);
-		createFolder(anis0Path + "/" + track);
+		FolderEditor.createFolder(anis0Path);
+		if (isDraw)
+			FolderEditor.createFolder(anis0Path + "/" + track);
 		oneIteration(h, 0, 0, fieldType, anis0Path, track, isDraw);
 
 		double angleTheta, angleFi;
@@ -106,40 +107,18 @@ public class Launcher {
 				System.out.println(new Date());
 
 				String anisPath = path + "/h = " + h + ";theta=" + angleTheta + ";fi=" + angleFi;
-				createFolder(anisPath);
-				createFolder(anisPath + "/" + track);
+				FolderEditor.createFolder(anisPath);
+				if (isDraw)
+					FolderEditor.createFolder(anisPath + "/" + track);
 				oneIteration(h, angleTheta, angleFi, fieldType, anisPath, track, isDraw);
 			}
 
 		String anis1Path = path + "/h = " + h + ";theta=" + Math.PI + ";fi=" + 0.0;
-		createFolder(anis1Path);
-		createFolder(anis1Path + "/" + track);
+		FolderEditor.createFolder(anis1Path);
+		if (isDraw)
+			FolderEditor.createFolder(anis1Path + "/" + track);
 		oneIteration(h, Math.PI, 0, fieldType, anis1Path, track, isDraw);
 	}
-
-
-
-	public static void characterRandom (double h, String fieldType, boolean isDraw) {
-		String destination = "res/" + fieldType;
-		createFolder(destination);
-		String path = destination + "/h = " + h;
-		String track = "track";
-		createFolder(path);
-		int k = 400;
-		Random rand = new Random();
-		double angleTheta, angleFi;
-		while(k --> 0) {
-				angleTheta = Math.acos(2 * rand.nextDouble() - 1);
-				angleFi = 2 * Math.PI * rand.nextDouble();
-				System.out.println(k);
-				String anisPath = path + "/h = " + h + ";theta=" + angleTheta + ";fi=" + angleFi;
-				createFolder(anisPath);
-				createFolder(anisPath + "/" + track);
-				oneIteration(h, angleTheta, angleFi, fieldType, anisPath, track, isDraw);
-			}
-	}
-
-
 
 	public static void oneIteration(double h, double angleTheta, double angleFi, String fieldType, String anisPath, String track, boolean isDraw) {
 		ArrayList<Double> eList = new ArrayList<>();
@@ -163,10 +142,4 @@ public class Launcher {
 		return bd.doubleValue();
 	}
 
-
-	public static void createFolder(String folderName) {
-		File theDir = new File(folderName);
-		if (!theDir.exists())
-			theDir.mkdir();
-	}
 }

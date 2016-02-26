@@ -11,7 +11,6 @@ import java.util.ListIterator;
 
 public class TextWriter {
 
-    @SuppressWarnings("resource")//damn
     public static void writeDoubleList(List<Double> averrageList, String name) {
 
         ListIterator<Double> iter = averrageList.listIterator();
@@ -29,7 +28,6 @@ public class TextWriter {
         }
     }
 
-    @SuppressWarnings("resource")
     public static void writeIntegerList(LinkedList<Integer> averrageList, String name) {
 
         ListIterator<Integer> iter = averrageList.listIterator();
@@ -46,10 +44,7 @@ public class TextWriter {
         }
     }
 
-    @SuppressWarnings("resource")
     public static void writeTraectorysCoordinates(List<Vector> list, String name) {
-
-        //String tittle = name + new SimpleDateFormat("yyyy-MM-dd HH-mm-ss.SSS").format(new Date());
 
         File xFile = new File(name + "_x.txt");
         File yFile = new File(name + "_y.txt");

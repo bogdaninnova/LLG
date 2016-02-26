@@ -95,4 +95,10 @@ public class FolderEditor {
         return new double[]{h, theta, fi};
     }
 
+    public static void createFolder(String folderName) {
+        File theDir = new File(folderName);
+        if (!theDir.exists())
+            theDir.mkdir();
+    }
+
 }

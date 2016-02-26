@@ -16,11 +16,7 @@ import java.util.ListIterator;
 
 import javax.imageio.ImageIO;
 
-import main.CartesianCalculation;
 import main.Vector;
-import main.fields.Anisotrophia;
-import main.fields.Circular;
-import main.fields.Field;
 
 public class Draw {
 

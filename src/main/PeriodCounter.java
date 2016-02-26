@@ -9,7 +9,7 @@ import java.util.LinkedList;
 public class PeriodCounter {
 
 	private Vector startDot;
-	private static final double r = Math.pow(10, -4);
+	private static final double r = Math.pow(10, -3);
 	private boolean isLastInside;
 	private boolean isNowInside;
 	private int counter;

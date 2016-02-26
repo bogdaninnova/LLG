@@ -1,6 +1,6 @@
 package main;
 
-import main.fields.Anisotrophia;
+import main.fields.Anisotropy;
 import main.fields.Field;
 
 import java.util.ArrayList;
@@ -38,10 +38,10 @@ public class CartesianCalculation extends Calculation {
 		for (Field field : fields)
 			this.fields.add(field);
 
-		if (!isContainField(Anisotrophia.class))
+		if (!isContainField(Anisotropy.class))
 			setBeginningLocation(new Vector(0, 0));
 		else
-			setBeginningLocation(new Vector(((Anisotrophia) getField(Anisotrophia.class)).getAxe()));
+			setBeginningLocation(new Vector(((Anisotropy) getField(Anisotropy.class)).getAxe()));
 	}
 
 	public boolean isContainField(Class fieldClass) {
