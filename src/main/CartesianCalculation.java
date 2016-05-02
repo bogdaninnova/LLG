@@ -101,10 +101,10 @@ public class CartesianCalculation extends Calculation {
 	
 	private Vector getdM(Vector M) {
 		Vector d1, d2, d3, d4;
-		d1 = LLG(M.getX(), M.getY(), M.getZ(), t);
-		d2 = LLG(M.getX()+dt/2*d1.getX(), M.getY()+dt/2*d1.getY(), M.getZ()+dt/2*d1.getZ(), t+dt/2);
-		d3 = LLG(M.getX()+dt/2*d2.getX(), M.getY()+dt/2*d2.getY(), M.getZ()+dt/2*d2.getZ(), t+dt/2);
-		d4 = LLG(M.getX()+dt/1*d3.getX(), M.getY()+dt/1*d3.getY(), M.getZ()+dt/1*d3.getZ(), t+dt/1);
+		d1 = LLG_conductive(M.getX(), M.getY(), M.getZ(), t);
+		d2 = LLG_conductive(M.getX() + dt / 2 * d1.getX(), M.getY() + dt / 2 * d1.getY(), M.getZ() + dt / 2 * d1.getZ(), t + dt / 2);
+		d3 = LLG_conductive(M.getX() + dt / 2 * d2.getX(), M.getY() + dt / 2 * d2.getY(), M.getZ() + dt / 2 * d2.getZ(), t + dt / 2);
+		d4 = LLG_conductive(M.getX() + dt / 1 * d3.getX(), M.getY() + dt / 1 * d3.getY(), M.getZ() + dt / 1 * d3.getZ(), t + dt / 1);
 
 		return new Vector(
 				dt/6 * (d1.getX() + 2 * d2.getX() + 2 * d3.getX() + d4.getX()),
@@ -124,13 +124,39 @@ public class CartesianCalculation extends Calculation {
 						multiply(-1 / (1 + Math.pow(ALPHA, 2)));
 	}
 
+	private Vector LLG_conductive(double mx, double my, double mz, double t) {
+		Vector M = new Vector(mx, my, mz);
+
+		Vector dH0 = getDerHeff(M, t);
+		Vector Heff = getHeff(M, t).plus(dH0.multiply(taoAnomal - taoSigma * mu1));
+
+		Vector MxH = M.crossProduct(Heff);
+		Vector MxMxH = M.crossProduct(MxH);
+
+		Vector c1_MxH = MxH.multiply(1 - ksi);
+		Vector c2_MxMxH = MxMxH.multiply(ALPHA);
+
+		return new Vector(
+				(c1_MxH.getX() + c2_MxMxH.getX()),
+				(c1_MxH.getY() + c2_MxMxH.getY()),
+				(c1_MxH.getZ() + c2_MxMxH.getZ())).multiply(constant);
+	}
+
 	public Vector getHeff(Vector M, double t) {
 		Vector temp = new Vector();
 
-		for (Field field : fields) {
+		for (Field field : fields)
 			temp = temp.plus(field.getValue(M, t));
-			//temp = temp.plus(field.getDerivative(M, t).multiply(-Constants.taoSigma)); //TODO
-		}
+
+		return temp;
+	}
+
+	public Vector getDerHeff(Vector M, double t) {
+		Vector temp = new Vector();
+
+		for (Field field : fields)
+			temp = temp.plus(field.getDerivative(M, t));
+
 		return temp;
 	}
 

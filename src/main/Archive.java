@@ -21,7 +21,7 @@ public final class Archive {
         ArrayList<Double> listY = new ArrayList<>();
         ArrayList<Double> listZ = new ArrayList<>();
         ArrayList<Double> listE = new ArrayList<>();
-        for (int i = 0; i < 200; i++) {
+        for (int i = 0; i < 191; i++) {
             listX.add(0d);
             listY.add(0d);
             listZ.add(0d);
@@ -91,7 +91,6 @@ public final class Archive {
     }
 
     private static ArrayList<Double> addLists(ArrayList<Double> list1, ArrayList<Double> list2) {
-
         if (list1.size() != list2.size())
             return null;
         ArrayList<Double> list = new ArrayList<>();

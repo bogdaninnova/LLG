@@ -2,7 +2,7 @@ package painting;
 
 import main.CartesianCalculation;
 import main.Vector;
-import main.fields.Impuls;
+import main.fields.Impulse;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -36,8 +36,8 @@ public class DrawComponents {
 
 		double h = 0;
 		
-		if (c.isContainField(Impuls.class))
-			h =  ((Impuls) c.getField(Impuls.class)).getH();
+		if (c.isContainField(Impulse.class))
+			h =  ((Impulse) c.getField(Impulse.class)).getH();
 
 		Draw.save(bi, new File(name + ".png"));
 	}
