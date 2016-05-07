@@ -67,7 +67,7 @@ public class SphericalCalculation extends Calculation {
 		double mp = m_p(mt, mf);
 
 		//m_theta
-		double thetta =
+		double theta =
 			(hy * cos(mf) - hx * sin(mf)) + mp * sin(at) * sin(af - mf) +
 			ALPHA * cos(mt) * ((hx * cos(mf) + hy * sin(mf)) + mp * sin(at) * cos(af - mf)) -
 			ALPHA * sin(mt) * (hz + mp * cos(at));
@@ -80,9 +80,8 @@ public class SphericalCalculation extends Calculation {
 				ALPHA / sin(mt) * (hy * cos(mf) - hx * sin(mf)) +
 				ALPHA / sin(mt) * mp * sin(at) * sin(af - mf);
 		phi /= ALPHA * ALPHA + 1;
-		thetta /= ALPHA * ALPHA + 1;
-		double[] array = {thetta, phi};
-		return array;
+		theta /= ALPHA * ALPHA + 1;
+		return new double[]{theta, phi};
 	}
 
 	

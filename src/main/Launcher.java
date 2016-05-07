@@ -13,9 +13,31 @@ import java.util.Date;
 public class Launcher {
 
 	public static void main(String...strings) {
-		Calculation.print();
-		oneParticle("circular", 0.7074832117793429, 0.7074832117793429, 0.1, 1, "hall\\" + Calculation.sigma + " " + Calculation.nu, true);
-//
+//		Calculation.print();
+		double theta = Math.PI / 4;
+		double phi = 0;
+		double h = 0.1;
+		double w = 1;
+
+		oneParticle("circular", theta, phi, h, w, "hall\\Decart", true);
+
+		SphericalCalculation spherival = new SphericalCalculation(theta, phi, h, w);
+		spherival.run(0, 10);
+		new Draw(spherival.getArray(), new Vector(theta, phi),
+				0.4 * Math.PI, 0.4 * Math.PI, 0, "hall\\Spherical").drawTraectory(true);
+
+		StochasticCalculation sc = new StochasticCalculation();
+		sc.run(0, 10000);
+		new Draw(sc.getArray(), new Vector(theta, phi),
+				0.4 * Math.PI, 0.4 * Math.PI, 0, "hall\\Stochas").drawTraectory(true);
+
+		CheckStochasticCalculation csc = new CheckStochasticCalculation();
+		csc.run(0, 10000);
+		new Draw(csc.getArray(), new Vector(theta, phi),
+				0.4 * Math.PI, 0.4 * Math.PI, 0, "hall\\Stochas2").drawTraectory(true);
+
+
+
 //		Field circular = new Circular(1, 1);
 //
 //		System.out.println(circular.getValue(null, Math.PI).getX());
