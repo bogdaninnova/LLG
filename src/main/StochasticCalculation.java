@@ -4,7 +4,6 @@ import java.util.Random;
 
 public class StochasticCalculation extends Calculation {
 
-    private static final double dt = Math.pow(10, -3);
     private static final double da = Math.pow(10, -8);//step by angle
 
     public static final double w = 1;
@@ -12,15 +11,11 @@ public class StochasticCalculation extends Calculation {
 
     private static Random rand = new Random();
 
-    private static final double ALPHA = 0.01;
     private static final double L = 1 + ALPHA * ALPHA;
-    private static final double Ha = 5 * Math.pow(10, 4);
-    private static final double M = Math.pow(10, 4) / (2 * Math.PI);
-    private static final double R = Math.pow(10, -5);
-    private static final double V = 4/3 * Math.PI * Math.pow(R, 3);
+
     private static final double Kb = 1.38 * Math.pow(10, -16);
     private static final double T = 20;
-    private static final double E = Ha * M * V / Kb / T;
+    private static final double E = Ha * modM * V / (Kb * T);
 
     private static final double SQRT_2_ALPHA_E = Math.sqrt(2 * ALPHA / E);
 
@@ -50,12 +45,10 @@ public class StochasticCalculation extends Calculation {
         }
     }
 
+    @Override
     public void iteration() {
-
-        double coef = Math.pow(10, 2);
-
-        double N1 = coef * rand.nextDouble();//0..1
-        double N2 = coef * rand.nextDouble();//0..1
+        double N1 = rand.nextDouble();//0..1
+        double N2 = rand.nextDouble();//0..1
 
         double dEnergy_dtheta = get_dW_dtheta(theta, phi, t);
         double dEnergy_dphi = get_dW_dphi(theta, phi, t);
@@ -73,8 +66,6 @@ public class StochasticCalculation extends Calculation {
                         - ALPHA / L * sinTheta_1 * sinTheta_1 * dEnergy_dphi) * dt
                 + SQRT_2_ALPHA_E / L * sinTheta_1 * N2 * Math.sqrt(dt);
 
-
-
         theta += dTheta;
         phi += dPhi;
         t += dt;
@@ -90,7 +81,7 @@ public class StochasticCalculation extends Calculation {
     }
 
     private static double getW(double theta, double phi, double t) {
-        return -0.5 * Math.pow(getM_H0(t, theta, phi), 2) - getM_Ea(theta, phi);
+        return -0.5 * Math.pow(getM_Ea(theta, phi), 2) - getM_H0(t, theta, phi);
     }
 
     private static double getM_H0(double t, double theta, double phi) {

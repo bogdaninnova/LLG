@@ -12,13 +12,14 @@ public abstract class Calculation {
 	public static final double nu = 0 * Math.pow(10, 15);//TODO find AHE koeff
 
 	private static final double alpha0 = 0.01;
-	private static final double a = Math.pow(10, -5);
+	protected static final double R = Math.pow(10, -5);
+	protected static final double V = (4/3) * Math.PI * Math.pow(R, 3);
 	protected static final double mu1 = 1;
 	private static final double mu2 = 1;
 	private static final double c = 3 * Math.pow(10, 10);
 	private static final double gamma = 1.76 * Math.pow(10, 7);
-	protected static final double modulM = Math.pow(10, 4) / (2 * Math.PI);
-	private static final double Ha = 5 * Math.pow(10, 4);
+	protected static final double modM = Math.pow(10, 4) / (2 * Math.PI);
+	protected static final double Ha = 5 * Math.pow(10, 4);
 
 	protected static final double kappa = 3 * mu2 / (mu1 + 2 * mu2);
 
@@ -64,23 +65,23 @@ public abstract class Calculation {
 	}
 	
 	private static double getTaoSigma() {
-		double answer = 4 * Math.PI * sigma * kappa * kappa * a * a * mu1 / (15 * c * c);
+		double answer = 4 * Math.PI * sigma * kappa * kappa * R * R * mu1 / (15 * c * c);
 		answer *= gamma * Ha;
 		return answer;
 	}
 
 	private static double getTaoAnomal() {
-		double answer = 4 * Math.PI * nu * kappa * kappa * a * a * mu1 / (15 * c * c);
+		double answer = 4 * Math.PI * nu * kappa * kappa * R * R * mu1 / (15 * c * c);
 		answer *= gamma * Ha;
 		return answer;
 	}
 	
 	private static  double getAlphaSigma() {
-		return 8 * Math.PI / 3 * gamma * modulM * getTaoSigma();
+		return 8 * Math.PI / 3 * gamma * modM * getTaoSigma();
 	}
 
 	private static  double getKsi() {
-		return 8 * Math.PI / 3 * gamma * modulM * getTaoAnomal();
+		return 8 * Math.PI / 3 * gamma * modM * getTaoAnomal();
 	}
 
 	public static void print() {

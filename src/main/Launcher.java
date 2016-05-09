@@ -13,6 +13,32 @@ import java.util.Date;
 public class Launcher {
 
 	public static void main(String...strings) {
+
+//		double theta0 = Math.PI/ 3;
+//		double phi0 = Math.PI/ 3;
+//		double t = 0;
+//
+//		System.out.println("getSimpleW" + CheckStochasticCalculation.getSimpleW(theta0, phi0, Math.PI / 4, 0,
+//				Math.cos(t), Math.sin(t)));
+//		System.out.println("gwtW()" + CheckStochasticCalculation.getW(theta0, phi0, t));
+//		System.exit(0);
+//
+//		double dt = Math.pow(10, -8);
+//		double w2 = CheckStochasticCalculation.getW(Math.PI / 3 + dt, Math.PI / 3, 0.12343);
+//		double w1 = CheckStochasticCalculation.getW(Math.PI / 3 - dt, Math.PI / 3, 0.12343);
+//
+//		System.out.println(w2);
+//		System.out.println(w1);
+//		System.out.println((w2-w1) / 2 / dt);
+//		System.out.println();
+//		System.out.println(CheckStochasticCalculation.get_dW_dtheta(Math.PI / 3, Math.PI / 3, 0.12343));
+//		System.out.println(CheckStochasticCalculation.get_dW_dtheta0(Math.PI / 3, Math.PI / 3, 0.12343));
+//
+//
+//
+//
+//		System.exit(0);
+
 //		Calculation.print();
 		double theta = Math.PI / 4;
 		double phi = 0;
@@ -31,11 +57,11 @@ public class Launcher {
 		new Draw(sc.getArray(), new Vector(theta, phi),
 				0.4 * Math.PI, 0.4 * Math.PI, 0, "hall\\Stochas").drawTraectory(true);
 
-		CheckStochasticCalculation csc = new CheckStochasticCalculation();
-		csc.run(0, 10000);
-		new Draw(csc.getArray(), new Vector(theta, phi),
-				0.4 * Math.PI, 0.4 * Math.PI, 0, "hall\\Stochas2").drawTraectory(true);
-
+//		CheckStochasticCalculation csc = new CheckStochasticCalculation();
+//		csc.run(0, 10000);
+//		new Draw(csc.getArray(), new Vector(theta, phi),
+//				0.4 * Math.PI, 0.4 * Math.PI, 0, "hall\\Stochas2").drawTraectory(true);
+//
 
 
 //		Field circular = new Circular(1, 1);
