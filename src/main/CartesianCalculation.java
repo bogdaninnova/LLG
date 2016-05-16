@@ -101,10 +101,10 @@ public class CartesianCalculation extends Calculation {
 	
 	private Vector getdM(Vector M) {
 		Vector d1, d2, d3, d4;
-		d1 = LLG(M.getX(), M.getY(), M.getZ(), t);
-		d2 = LLG(M.getX() + dt / 2 * d1.getX(), M.getY() + dt / 2 * d1.getY(), M.getZ() + dt / 2 * d1.getZ(), t + dt / 2);
-		d3 = LLG(M.getX() + dt / 2 * d2.getX(), M.getY() + dt / 2 * d2.getY(), M.getZ() + dt / 2 * d2.getZ(), t + dt / 2);
-		d4 = LLG(M.getX() + dt / 1 * d3.getX(), M.getY() + dt / 1 * d3.getY(), M.getZ() + dt / 1 * d3.getZ(), t + dt / 1);
+		d1 = LLG_conductive(M.getX(), M.getY(), M.getZ(), t);
+		d2 = LLG_conductive(M.getX() + dt / 2 * d1.getX(), M.getY() + dt / 2 * d1.getY(), M.getZ() + dt / 2 * d1.getZ(), t + dt / 2);
+		d3 = LLG_conductive(M.getX() + dt / 2 * d2.getX(), M.getY() + dt / 2 * d2.getY(), M.getZ() + dt / 2 * d2.getZ(), t + dt / 2);
+		d4 = LLG_conductive(M.getX() + dt / 1 * d3.getX(), M.getY() + dt / 1 * d3.getY(), M.getZ() + dt / 1 * d3.getZ(), t + dt / 1);
 
 		return new Vector(
 				dt/6 * (d1.getX() + 2 * d2.getX() + 2 * d3.getX() + d4.getX()),
@@ -128,9 +128,13 @@ public class CartesianCalculation extends Calculation {
 		Vector M = new Vector(mx, my, mz);
 
 		Vector dH0 = getDerHeff(M, t);
-		Vector Heff = getHeff(M, t).plus(dH0.multiply(taoAnomal - taoSigma * mu1));
+		Vector H = new Vector(
+				getHeff(M, t),
+				dH0.multiply(-mu1 * taoSigma),
+				M.crossProduct(dH0).multiply(taoAnomal));
 
-		Vector MxH = M.crossProduct(Heff);
+
+		Vector MxH = M.crossProduct(H);
 		Vector MxMxH = M.crossProduct(MxH);
 
 		Vector c1_MxH = MxH.multiply(1 - ksi);

@@ -8,8 +8,8 @@ public abstract class Calculation {
 	protected double t = 0;
 	protected ArrayList<Vector> array = new ArrayList<>();
 
-	public static final double sigma = 0 * Math.pow(10, 15);
-	public static final double nu = 0 * Math.pow(10, 15);//TODO find AHE koeff
+	public static final double sigma = 1 * Math.pow(10, 18);
+	public static final double nu = 1 * Math.pow(10, 18);//TODO find AHE koeff
 
 	private static final double alpha0 = 0.01;
 	protected static final double R = Math.pow(10, -5);
@@ -24,12 +24,12 @@ public abstract class Calculation {
 	protected static final double kappa = 3 * mu2 / (mu1 + 2 * mu2);
 
 
-	protected static final double ksi = 0;//todo getKsi();
+	protected static final double ksi = getKsi();
 
 	protected static final double taoSigma = getTaoSigma();
 	protected static final double taoAnomal = getTaoAnomal();
 
-	protected static final double ALPHA = alpha0;//todo + getAlphaSigma();
+	protected static final double ALPHA = alpha0 + getAlphaSigma();
 
 
 
@@ -65,23 +65,23 @@ public abstract class Calculation {
 	}
 	
 	private static double getTaoSigma() {
-		double answer = 4 * Math.PI * sigma * kappa * kappa * R * R * mu1 / (15 * c * c);
+		double answer = 4 * Math.PI * sigma * kappa * kappa * R * R / (15 * c * c);
 		answer *= gamma * Ha;
 		return answer;
 	}
 
 	private static double getTaoAnomal() {
-		double answer = 4 * Math.PI * nu * kappa * kappa * R * R * mu1 / (15 * c * c);
+		double answer = 4 * Math.PI * nu * kappa * kappa * R * R / (15 * c * c);
 		answer *= gamma * Ha;
 		return answer;
 	}
 	
 	private static  double getAlphaSigma() {
-		return 8 * Math.PI / 3 * gamma * modM * getTaoSigma();
+		return 8 * Math.PI / 3 * modM / Ha * getTaoSigma();
 	}
 
 	private static  double getKsi() {
-		return 8 * Math.PI / 3 * gamma * modM * getTaoAnomal();
+		return 8 * Math.PI / 3 * modM / Ha * getTaoAnomal();
 	}
 
 	public static void print() {

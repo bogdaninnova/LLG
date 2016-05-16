@@ -19,6 +19,16 @@ public class Launcher {
 		double phi = 0;
 		double h = 0.1;
 		double w = 1;
+		oneParticle("circular", theta, phi, h, w, "hall\\Decart", true);
+
+		Calculation.print();
+
+
+		System.exit(0);
+//		double theta = Math.PI / 4;
+//		double phi = 0;
+//		double h = 0.1;
+//		double w = 1;
 		Date date1 = new Date();
 		oneParticle("circular", theta, phi, h, w, "hall\\Decart", true);
 		Date date2 = new Date();
@@ -61,7 +71,7 @@ public class Launcher {
 				throw new IllegalArgumentException();
 		}
 
-		c.run(0, 10);
+		c.run(1000, 100);
 		//c.run();
 
 		if (isDraw)
