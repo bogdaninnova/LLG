@@ -14,7 +14,7 @@ public class StochasticCalculation extends Calculation {
     private static final double L = 1 + ALPHA * ALPHA;
 
     private static final double Kb = 1.38 * Math.pow(10, -16);
-    private static final double T = 20;
+    private static final double T = 300;
     private static final double E = Ha * modM * V / (Kb * T);
 
     private static final double SQRT_2_ALPHA_E = Math.sqrt(2 * ALPHA / E);
@@ -47,8 +47,10 @@ public class StochasticCalculation extends Calculation {
 
     @Override
     public void iteration() {
-        double N1 = rand.nextDouble();//0..1
-        double N2 = rand.nextDouble();//0..1
+
+        double coef = 1;
+        double N1 = coef * rand.nextDouble();//0..1
+        double N2 = coef * rand.nextDouble();//0..1
 
         double dEnergy_dtheta = get_dW_dtheta(theta, phi, t);
         double dEnergy_dphi = get_dW_dphi(theta, phi, t);

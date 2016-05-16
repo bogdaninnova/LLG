@@ -15,41 +15,40 @@ public class Launcher {
 	public static void main(String...strings) {
 
 
-		double theta = Math.PI / 4;
-		double phi = 0;
-		double h = 0.1;
-		double w = 1;
-		oneParticle("circular", theta, phi, h, w, "hall\\Decart", true);
-
-		Calculation.print();
-
-
-		System.exit(0);
 //		double theta = Math.PI / 4;
 //		double phi = 0;
 //		double h = 0.1;
 //		double w = 1;
+//		oneParticle("circular", theta, phi, h, w, "hall\\Decart", true);
+//
+//		Calculation.print();
+
+
+		double theta = Math.PI / 4;
+		double phi = 0;
+		double h = 0.1;
+		double w = 1;
 		Date date1 = new Date();
 		oneParticle("circular", theta, phi, h, w, "hall\\Decart", true);
 		Date date2 = new Date();
 		System.out.println(date2.getTime() - date1.getTime());
 		SphericalCalculation spherival = new SphericalCalculation(theta, phi, h, w);
-		spherival.run(0, 10);
+		spherival.run(0, 100);
 		new Draw(spherival.getArray(), new Vector(theta, phi),
 				0.4 * Math.PI, 0.4 * Math.PI, 0, "hall\\Spherical").drawTraectory(true);
 		Date date3 = new Date();
 		System.out.println(date3.getTime() - date2.getTime());
 		StochasticCalculation sc = new StochasticCalculation();
-		sc.run(0, 10000);
+		sc.run(0, 100000);
 		new Draw(sc.getArray(), new Vector(theta, phi),
 				0.4 * Math.PI, 0.4 * Math.PI, 0, "hall\\Stochas").drawTraectory(true);
 		Date date4 = new Date();
 		System.out.println(date4.getTime() - date3.getTime());
-		OptimStochasticCalculation osc = new OptimStochasticCalculation();
-		osc.run(0, 10000);
-		new Draw(osc.getArray(), new Vector(theta, phi),
-				0.4 * Math.PI, 0.4 * Math.PI, 0, "hall\\OStochas").drawTraectory(true);
-		System.out.println(new Date().getTime() - date4.getTime());
+//		OptimStochasticCalculation osc = new OptimStochasticCalculation();
+//		osc.run(0, 100000);
+//		new Draw(osc.getArray(), new Vector(theta, phi),
+//				0.4 * Math.PI, 0.4 * Math.PI, 0, "hall\\OStochas").drawTraectory(true);
+//		System.out.println(new Date().getTime() - date4.getTime());
 
 
 
@@ -71,7 +70,7 @@ public class Launcher {
 				throw new IllegalArgumentException();
 		}
 
-		c.run(1000, 100);
+		c.run(0, 100);
 		//c.run();
 
 		if (isDraw)

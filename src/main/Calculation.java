@@ -8,8 +8,8 @@ public abstract class Calculation {
 	protected double t = 0;
 	protected ArrayList<Vector> array = new ArrayList<>();
 
-	public static final double sigma = 1 * Math.pow(10, 18);
-	public static final double nu = 1 * Math.pow(10, 18);//TODO find AHE koeff
+	public static final double sigma = 0 * Math.pow(10, 18);
+	public static final double nu = 0 * Math.pow(10, 18);//TODO find AHE koeff
 
 	private static final double alpha0 = 0.01;
 	protected static final double R = Math.pow(10, -5);
