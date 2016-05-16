@@ -14,89 +14,32 @@ public class Launcher {
 
 	public static void main(String...strings) {
 
-//		double theta0 = Math.PI/ 3;
-//		double phi0 = Math.PI/ 3;
-//		double t = 0;
-//
-//		System.out.println("getSimpleW" + CheckStochasticCalculation.getSimpleW(theta0, phi0, Math.PI / 4, 0,
-//				Math.cos(t), Math.sin(t)));
-//		System.out.println("gwtW()" + CheckStochasticCalculation.getW(theta0, phi0, t));
-//		System.exit(0);
-//
-//		double dt = Math.pow(10, -8);
-//		double w2 = CheckStochasticCalculation.getW(Math.PI / 3 + dt, Math.PI / 3, 0.12343);
-//		double w1 = CheckStochasticCalculation.getW(Math.PI / 3 - dt, Math.PI / 3, 0.12343);
-//
-//		System.out.println(w2);
-//		System.out.println(w1);
-//		System.out.println((w2-w1) / 2 / dt);
-//		System.out.println();
-//		System.out.println(CheckStochasticCalculation.get_dW_dtheta(Math.PI / 3, Math.PI / 3, 0.12343));
-//		System.out.println(CheckStochasticCalculation.get_dW_dtheta0(Math.PI / 3, Math.PI / 3, 0.12343));
-//
-//
-//
-//
-//		System.exit(0);
 
-//		Calculation.print();
 		double theta = Math.PI / 4;
 		double phi = 0;
 		double h = 0.1;
 		double w = 1;
-
+		Date date1 = new Date();
 		oneParticle("circular", theta, phi, h, w, "hall\\Decart", true);
-
+		Date date2 = new Date();
+		System.out.println(date2.getTime() - date1.getTime());
 		SphericalCalculation spherival = new SphericalCalculation(theta, phi, h, w);
 		spherival.run(0, 10);
 		new Draw(spherival.getArray(), new Vector(theta, phi),
 				0.4 * Math.PI, 0.4 * Math.PI, 0, "hall\\Spherical").drawTraectory(true);
-
+		Date date3 = new Date();
+		System.out.println(date3.getTime() - date2.getTime());
 		StochasticCalculation sc = new StochasticCalculation();
 		sc.run(0, 10000);
 		new Draw(sc.getArray(), new Vector(theta, phi),
 				0.4 * Math.PI, 0.4 * Math.PI, 0, "hall\\Stochas").drawTraectory(true);
-
-//		CheckStochasticCalculation csc = new CheckStochasticCalculation();
-//		csc.run(0, 10000);
-//		new Draw(csc.getArray(), new Vector(theta, phi),
-//				0.4 * Math.PI, 0.4 * Math.PI, 0, "hall\\Stochas2").drawTraectory(true);
-//
-
-
-//		Field circular = new Circular(1, 1);
-//
-//		System.out.println(circular.getValue(null, Math.PI).getX());
-//		System.out.println(circular.getValue(null, Math.PI).getY());
-//		System.out.println(circular.getValue(null, Math.PI).getZ());
-//		System.out.println();
-//		System.out.println(circular.getDerivative(null, Math.PI).getX());
-//		System.out.println(circular.getDerivative(null, Math.PI).getY());
-//		System.out.println(circular.getDerivative(null, Math.PI).getZ());
-
-//		character(0.25, "circular", false);
-//		character(0.15, "circular", false);
-//		character(0.3, "circular", false);
-//		character(0.2, "circular", false);
-//
-
-
-//		String path1 = "angle=1000\\circular\\h = 0.15";
-//		String path2 = "angle=1000\\circular\\h = 0.2";
-//		String path3 = "angle=1000\\circular\\h = 0.25";
-//		String path4 = "angle=1000\\circular\\h = 0.3";
-//
-//		ExcelWriter ew = new ExcelWriter();
-//
-//		ew.addFewColumns("0.15", Archive.averrageComponents(path1));
-//		ew.addFewColumns("0.2", Archive.averrageComponents(path2));
-//		ew.addFewColumns("0.25", Archive.averrageComponents(path3));
-//		ew.addFewColumns("0.3", Archive.averrageComponents(path4));
-//
-//		ew.write("Step=1000");
-
-
-//		oneIteration(0.3, 0.9272952180016121, 0, "circular", "circular", "track", false);
+		Date date4 = new Date();
+		System.out.println(date4.getTime() - date3.getTime());
+		OptimStochasticCalculation osc = new OptimStochasticCalculation();
+		osc.run(0, 10000);
+		new Draw(osc.getArray(), new Vector(theta, phi),
+				0.4 * Math.PI, 0.4 * Math.PI, 0, "hall\\OStochas").drawTraectory(true);
+		System.out.println(new Date().getTime() - date4.getTime());
 
 
 
