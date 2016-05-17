@@ -1,17 +1,11 @@
 package main;
 
-import main.fields.Circular;
-import main.fields.Elliptical;
-import main.fields.Lineal;
-
 import java.util.LinkedList;
 
 public class PeriodCounter {
 
 	private Vector startDot;
-	private static final double r = Math.pow(10, -3);
 	private boolean isLastInside;
-	private boolean isNowInside;
 	private int counter;
 
 	private boolean isBegin = false;
@@ -20,9 +14,6 @@ public class PeriodCounter {
 	public LinkedList<Vector> list = new LinkedList<>();
 
 	public LinkedList<Double> energyList = new LinkedList<>();
-
-	private double omega;
-	private double dt;
 
 	private static final int LAPS = 5;
 
@@ -34,7 +25,7 @@ public class PeriodCounter {
 
 	public boolean isQ = false;
 
-	private void move(CartesianCalculation c) {
+	private void move(Calculation c) {
 
 		if (!isBegin) {
 			isBegin = true;
@@ -42,13 +33,12 @@ public class PeriodCounter {
 		}
 
 
-		time += dt;
+		time += Calculation.dt;
 		list.add(c.M.clone());
-		isNowInside = isDotNearDot(c.M, startDot);
 		raiseEnergy(c);
 		energyList.add(getEnergy());
 
-		if (isNowInside) {
+		if (c.M.dotProduct(startDot) > 0.999999) {
 			if (!isLastInside) {
 				counter++;
 				isLastInside = true;
@@ -56,9 +46,12 @@ public class PeriodCounter {
 		} else
 			isLastInside = false;
 
-		if (time > (LAPS * 10 / omega))
+		if (time > (LAPS * 10 / c.getOmega()))
 			isBegin = false;
 
+//		System.out.println("c.t "+c.t);
+//		System.out.println("time "+time);
+//		System.out.println("MAX_PERIOD "+MAX_PERIOD);
 		if (c.t > MAX_PERIOD) {
 			reset(c);
 			isQ = true;
@@ -66,54 +59,10 @@ public class PeriodCounter {
 		}
 	}
 
-	private double z1, z2;
-	private boolean isGrow;
-	private boolean isStartWrite = false;
 
 
-	/**
-	 *
-	 * Algorithm for finding period between minimum and maximum of some track
-	 *
-	 * */
-	private void move2(CartesianCalculation c) {
 
-		if (!isBegin) {
-			z1 = 2;
-			z2 = c.M.getZ();
-			isBegin = true;
-			return;
-		}
-
-		if (z1 == 2) {
-			z1 = z2;
-			z2 = c.M.getZ();
-			isGrow = z2 > z1;
-			return;
-		}
-
-		z1 = z2;
-		z2 = c.M.getZ();
-
-		if (z2 < z1 && isGrow) {
-			if (!isStartWrite)
-				isStartWrite = true;
-			else {
-				counter = LAPS;
-				System.out.print("Q");
-			}
-		}
-
-		if 	(isStartWrite) {
-			list.add(c.M.clone());
-			raiseEnergy(c);
-		}
-
-		isGrow = z2 > z1;
-
-	}
-
-	private void move3(CartesianCalculation c) {
+	private void move3(Calculation c) {
 		raiseEnergy(c);
 		list.add(c.M.clone());
 		if (c.t > 2 * MAX_PERIOD)
@@ -121,23 +70,13 @@ public class PeriodCounter {
 	}
 
 
-	private void reset(CartesianCalculation c) {
+	private void reset(Calculation c) {
 		counter = 0;
-
-		if (c.isContainField(Circular.class))
-			omega = c.getField(Circular.class).getW();
-		else if (c.isContainField(Lineal.class))
-			omega = c.getField(Lineal.class).getW();
-		else if (c.isContainField(Elliptical.class))
-			omega = c.getField(Elliptical.class).getW();
 
 		startDot = c.M.clone();
 		isLastInside = true;
 		time = 0;
-		dt = Calculation.dt;
 		list = new LinkedList<>();
-
-
 
 		energyList = new LinkedList<>();
 		steps = 0;
@@ -145,14 +84,7 @@ public class PeriodCounter {
 		M_aver = new Vector();
 	}
 
-	private static boolean isDotNearDot(Vector dot1, Vector dot2) {
-		return (Math.pow(dot1.getX() - dot2.getX(), 2) +
-				Math.pow(dot1.getY() - dot2.getY(), 2) +
-				Math.pow(dot1.getZ() - dot2.getZ(), 2) < r*r);
-	}
-
-
-	private void raiseEnergy(CartesianCalculation c) {
+	private void raiseEnergy(Calculation c) {
 		energy += c.getHeff(c.M, c.t).dotProduct(c.dM) / Calculation.dt;
 		M_aver = M_aver.plus(c.M);
 		steps++;
@@ -172,12 +104,7 @@ public class PeriodCounter {
 			return M_aver.multiply(1 / steps);
 	}
 
-
-	public double getValue() {
-		return counter;
-	}
-
-	public void update(CartesianCalculation c) {
+	public void update(Calculation c) {
 		if (isQ)
 			move3(c);
 		else
@@ -188,9 +115,7 @@ public class PeriodCounter {
 		return counter == LAPS;
 	}
 
-	public void externalReset(CartesianCalculation c) {
-		z1 = 2;
-		z2 = 2;
+	public void externalReset(Calculation c) {
 		counter = 0;
 		isBegin = false;
 		energy = 0;
@@ -199,16 +124,9 @@ public class PeriodCounter {
 		isLastInside = true;
 		time = 0;
 		isQ = false;
-		isStartWrite = false;
 		list = new LinkedList<>();
 		energyList = new LinkedList<>();
-
-		if (c.isContainField(Circular.class))
-			MAX_PERIOD = maxWaiting2period(c.getField(Circular.class).getW());
-		else if (c.isContainField(Lineal.class))
-			MAX_PERIOD = maxWaiting2period(c.getField(Lineal.class).getW());
-		else if (c.isContainField(Elliptical.class))
-			MAX_PERIOD = maxWaiting2period(c.getField(Elliptical.class).getW());
+		MAX_PERIOD = maxWaiting2period(c.getOmega());
 	}
 
 
@@ -228,3 +146,4 @@ public class PeriodCounter {
 		return 32 / w;
 	}
 }
+

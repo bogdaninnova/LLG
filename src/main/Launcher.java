@@ -15,40 +15,31 @@ public class Launcher {
 	public static void main(String...strings) {
 
 
-//		double theta = Math.PI / 4;
-//		double phi = 0;
-//		double h = 0.1;
-//		double w = 1;
+		double theta = Math.PI / 4;
+		double phi = 0;
+		double h = 0.4;
+		double w = 1;
 //		oneParticle("circular", theta, phi, h, w, "hall\\Decart", true);
 //
 //		Calculation.print();
 
 
-		double theta = Math.PI / 4;
-		double phi = 0;
-		double h = 0.1;
-		double w = 1;
-		Date date1 = new Date();
-		oneParticle("circular", theta, phi, h, w, "hall\\Decart", true);
-		Date date2 = new Date();
-		System.out.println(date2.getTime() - date1.getTime());
-		SphericalCalculation spherival = new SphericalCalculation(theta, phi, h, w);
-		spherival.run(0, 100);
-		new Draw(spherival.getArray(), new Vector(theta, phi),
-				0.4 * Math.PI, 0.4 * Math.PI, 0, "hall\\Spherical").drawTraectory(true);
-		Date date3 = new Date();
-		System.out.println(date3.getTime() - date2.getTime());
-		StochasticCalculation sc = new StochasticCalculation();
-		sc.run(0, 100000);
+		Date date = new Date();
+		CartesianCalculation c = new CartesianCalculation(new Anisotropy(theta, phi), new Circular(w, h));
+		c.run();
+		System.out.println(new Date().getTime() - date.getTime());
+		new Draw(c.getArray(),
+				((Anisotropy) c.getField(Anisotropy.class)).getAxe(),
+				0.4 * Math.PI, 0.4 * Math.PI, 0, "hall\\Decart").drawTraectory(true);
+
+		System.out.println(c.getEnergy());
+		date = new Date();
+		StochasticCalculation sc = new StochasticCalculation(new Anisotropy(theta, phi), new Circular(w, h));
+		sc.run();
 		new Draw(sc.getArray(), new Vector(theta, phi),
 				0.4 * Math.PI, 0.4 * Math.PI, 0, "hall\\Stochas").drawTraectory(true);
-		Date date4 = new Date();
-		System.out.println(date4.getTime() - date3.getTime());
-//		OptimStochasticCalculation osc = new OptimStochasticCalculation();
-//		osc.run(0, 100000);
-//		new Draw(osc.getArray(), new Vector(theta, phi),
-//				0.4 * Math.PI, 0.4 * Math.PI, 0, "hall\\OStochas").drawTraectory(true);
-//		System.out.println(new Date().getTime() - date4.getTime());
+		System.out.println(sc.getEnergy());
+		System.out.println(new Date().getTime() - date.getTime());
 
 
 
@@ -70,8 +61,8 @@ public class Launcher {
 				throw new IllegalArgumentException();
 		}
 
-		c.run(0, 100);
-		//c.run();
+		//c.run(0, 100);
+		c.run();
 
 		if (isDraw)
 			new Draw(c.getArray(),

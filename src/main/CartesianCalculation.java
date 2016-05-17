@@ -8,10 +8,11 @@ import java.util.ArrayList;
 public class CartesianCalculation extends Calculation {
 
 	
-	public Vector dM = new Vector();
-	public Vector M;
 
-	public ArrayList<Field> fields;
+
+	protected ArrayList<Field> fields;
+
+
 	private PeriodCounter pc = new PeriodCounter();
 
 	public CartesianCalculation(Field... fields) {
@@ -29,26 +30,32 @@ public class CartesianCalculation extends Calculation {
 
 	private void update() {
 		pc.externalReset(this);
-		array = new ArrayList<Vector>();
+		array = new ArrayList<>();
 		t = 0;
 	}
 	
 	public void setFields(Field... fields) {
-		this.fields = new ArrayList<Field>();
-		for (Field field : fields)
+		dM = new Vector();
+		this.fields = new ArrayList<>();
+		this.omega = -1;
+		setBeginningLocation(null);
+		for (Field field : fields) {
 			this.fields.add(field);
-
-		if (!isContainField(Anisotropy.class))
+			if (field.getW() != null)
+				if (omega == -1) {
+					this.omega = field.getW();
+				} else {
+					throw new IllegalArgumentException("More than one field has frequency");
+				}
+			if (field.getClass().equals(Anisotropy.class))
+				if (M == null) {
+					setBeginningLocation(((Anisotropy) field).getAxe());
+				} else {
+					throw new IllegalArgumentException("More than one easy axe");
+				}
+		}
+		if (M == null)
 			setBeginningLocation(new Vector(0, 0));
-		else
-			setBeginningLocation(new Vector(((Anisotropy) getField(Anisotropy.class)).getAxe()));
-	}
-
-	public boolean isContainField(Class fieldClass) {
-		for (Field field : fields)
-			if (field.getClass().equals(fieldClass))
-				return true;
-		return false;
 	}
 
 	public Field getField(Class fieldClass) {
@@ -56,10 +63,6 @@ public class CartesianCalculation extends Calculation {
 			if (field.getClass().equals(fieldClass))
 				return field;
 		return null;
-	}
-
-	private void setBeginningLocation(Vector vector) {
-		M = vector;
 	}
 
 	public void run(double waitingTime, double workingTime) {
@@ -86,11 +89,6 @@ public class CartesianCalculation extends Calculation {
 		}
 		for (Vector vector : pc.list)
 			array.add(vector);
-	}
-
-	protected void wait(double waitingTime) {
-		while (t < waitingTime) 
-			iteration();
 	}
 
 	protected void iteration() {

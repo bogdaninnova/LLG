@@ -6,19 +6,66 @@ public class Vector {
 	private final double y;
 	private final double z;
 
+	private double sinTheta;
+	private double cosTheta;
+	private double sinPhi;
+	private double cosPhi;
+
+	private double theta;
+	private double phi;
+
+
+
+	public double getSinTheta() {
+		if (!isTrigonometryFilled)
+			fillTrigonometry(getThetta(), getPhi());
+		return sinTheta;
+	}
+
+	public double getCosTheta() {
+		if (!isTrigonometryFilled)
+			fillTrigonometry(getThetta(), getPhi());
+		return cosTheta;
+	}
+
+	public double getSinPhi() {
+		if (!isTrigonometryFilled)
+			fillTrigonometry(getThetta(), getPhi());
+		return sinPhi;
+	}
+
+	public double getCosPhi() {
+		if (!isTrigonometryFilled)
+			fillTrigonometry(getThetta(), getPhi());
+		return cosPhi;
+	}
+
+	private boolean isTrigonometryFilled = false;
+
+	private void fillTrigonometry(double theta, double phi) {
+		this.theta = theta;
+		this.phi = phi;
+		sinTheta = Math.sin(theta);
+		cosTheta = Math.cos(theta);
+		sinPhi = Math.sin(phi);
+		cosPhi = Math.cos(phi);
+		isTrigonometryFilled = true;
+	}
+
 	public Vector(double x, double y, double z) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
 	}
 	
-	public Vector(double theta, double fi) {
-		x = Math.sin(theta) * Math.cos(fi);
-		y = Math.sin(theta) * Math.sin(fi);
-		z = Math.cos(theta);
+	public Vector(double theta, double phi) {
+		fillTrigonometry(theta, phi);
+		x = sinTheta * cosPhi;
+		y = sinTheta * sinPhi;
+		z = cosTheta;
 	}
 
-	public Vector(Vector ... vectors) {
+	public Vector(Vector... vectors) {
 		double x = 0, y = 0, z = 0;
 		for (Vector vector : vectors) {
 			x += vector.getX();
@@ -43,10 +90,14 @@ public class Vector {
 	}
 
 	public double getThetta() {
+		if (isTrigonometryFilled)
+			return theta;
 		return Math.acos(z / modul());
 	}
 
 	public double getPhi() {
+		if (isTrigonometryFilled)
+			return phi;
 		if (x == 0)
 			return Math.PI / 2;
 		return Math.atan(y / x);
@@ -62,6 +113,10 @@ public class Vector {
 
 	public double modul() {
 		return Math.sqrt(x*x+y*y+z*z);
+	}
+
+	public Vector minus(Vector vec) {
+		return new Vector(x - vec.getX(), y - vec.getY(), z - vec.getZ());
 	}
 
 	public Vector crossProduct(Vector vec) {

@@ -36,8 +36,8 @@ public class DrawComponents {
 
 		double h = 0;
 		
-		if (c.isContainField(Impulse.class))
-			h =  ((Impulse) c.getField(Impulse.class)).getH();
+//		if (c.isContainField(Impulse.class))
+//			h =  ((Impulse) c.getField(Impulse.class)).getH();
 
 		Draw.save(bi, new File(name + ".png"));
 	}

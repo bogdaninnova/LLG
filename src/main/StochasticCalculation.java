@@ -1,65 +1,111 @@
 package main;
 
+import main.fields.Anisotropy;
+import main.fields.Field;
+
 import java.util.Random;
 
 public class StochasticCalculation extends Calculation {
 
-    private static final double da = Math.pow(10, -8);//step by angle
-
-    public static final double w = 1;
-    public static final double h = 0.1;
+    private Anisotropy anisotropyField;
+    private Field outerField;
 
     private static Random rand = new Random();
 
+    private static final double da = Math.pow(10, -8);//step by angle
     private static final double L = 1 + ALPHA * ALPHA;
-
     private static final double Kb = 1.38 * Math.pow(10, -16);
     private static final double T = 300;
     private static final double E = Ha * modM * V / (Kb * T);
-
     private static final double SQRT_2_ALPHA_E = Math.sqrt(2 * ALPHA / E);
 
-    public static final double THETA_AN = Math.PI / 4;
-    public static final double PHI_AN = 0;
-    private static final double SIN_PHI_AN = sin(PHI_AN);
-    private static final double COS_PHI_AN = cos(PHI_AN);
-    private static final double SIN_THETA_AN = sin(THETA_AN);
-    private static final double COS_THETA_AN = cos(THETA_AN);
+    private PeriodCounter pc = new PeriodCounter();
 
-    private double theta = THETA_AN;
-    private double phi = PHI_AN;
-    private double t = 0;
+    public StochasticCalculation(Field... fields) {
+        setFields(fields);
+        pc.externalReset(this);
+    }
 
-    @Deprecated
+    public void setFields(Field... fields) {
+        dM = new Vector();
+        this.omega = -1;
+        setBeginningLocation(null);
+        for (Field field : fields) {
+            if (field.getW() != null) {
+                if (omega == -1) {
+                    this.omega = field.getW();
+                    this.outerField = field;
+                } else {
+                    throw new IllegalArgumentException("More than one field has frequency");
+                }
+            }
+            if (field.getClass().equals(Anisotropy.class))
+                if (M == null) {
+                    anisotropyField = (Anisotropy) field;
+                    Vector easyAxe = ((Anisotropy) field).getAxe();
+                    if (easyAxe.getX() > 0.99)
+                        setBeginningLocation(new Vector(Math.PI * 0.1, 0));
+                    else if (easyAxe.getX() < -0.99)
+                        setBeginningLocation(new Vector(Math.PI * 0.9, 0));
+                    else
+                        setBeginningLocation(easyAxe);
+                } else {
+                    throw new IllegalArgumentException("More than one easy axe");
+                }
+        }
+        if (M == null)
+            throw new IllegalArgumentException("No easy axe");
+    }
+
+    @Override
+    public Vector getHeff(Vector M, double t) {
+        return outerField.getValue(M, t).plus(anisotropyField.getValue(M, t));
+    }
+
     @Override
     public void run() {
+        pc.externalReset(this);
+        wait(300d);
+        while (true) {
+            iteration();
+            pc.update(this);
+            if (pc.isOver())
+                break;
+        }
+        for (Vector vector : pc.list)
+            array.add(vector);
     }
 
     @Override
     public void run(double waitingTime, double workingTime) {
-        for (int i = 0; i < waitingTime; i++)
+        wait(waitingTime);
+        while (true) {
             iteration();
-        for (int i = 0; i < workingTime; i++) {
-            iteration();
-            array.add(new Vector(theta, phi));
+            pc.update(this);
+            array.add(new Vector(M));
+            if (t >  waitingTime + workingTime)
+                break;
         }
+    }
+
+    public double getEnergy() {
+        return pc.getEnergy();
     }
 
     @Override
     public void iteration() {
 
-        double coef = 1;
-        double N1 = coef * rand.nextDouble();//0..1
-        double N2 = coef * rand.nextDouble();//0..1
+        double N1 = rand.nextDouble();//0..1
+        double N2 = rand.nextDouble();//0..1
 
-        double dEnergy_dtheta = get_dW_dtheta(theta, phi, t);
-        double dEnergy_dphi = get_dW_dphi(theta, phi, t);
-        double sinTheta_1 = 1 / sin(theta);
+        double dEnergy_dtheta = get_dW_dtheta(M, t);
+        double dEnergy_dphi = get_dW_dphi(M, t);
+        double sinTheta_1 = 1 / M.getSinTheta();
 
         double dTheta = (
                 - ALPHA / L * dEnergy_dtheta
                         - sinTheta_1 / L * dEnergy_dphi
-                + ALPHA / E / L / Math.tan(theta)
+                        + ALPHA / E / L * ( M.getCosTheta() / M.getSinTheta())
         ) * dt
                 + SQRT_2_ALPHA_E / L * N1 * Math.sqrt(dt);
 
@@ -68,38 +114,38 @@ public class StochasticCalculation extends Calculation {
                         - ALPHA / L * sinTheta_1 * sinTheta_1 * dEnergy_dphi) * dt
                 + SQRT_2_ALPHA_E / L * sinTheta_1 * N2 * Math.sqrt(dt);
 
-        theta += dTheta;
-        phi += dPhi;
+        dM = new Vector(dTheta, dPhi);
+
+        Vector oldM = M.clone();
+        M = new Vector(M.getThetta() + dTheta, M.getPhi() + dPhi);
+        dM = M.minus(oldM);
         t += dt;
     }
 
-
-    public static double get_dW_dtheta(double theta, double phi, double t) {
-        return (getW(theta + da, phi, t) - getW(theta, phi, t)) / da;
+    public double get_dW_dtheta(Vector M, double t) {
+        return (getW(new Vector(M.getThetta() + da, M.getPhi()), t) -
+                getW(new Vector(M.getThetta(), M.getPhi()), t)) / da;
     }
 
-    public static double get_dW_dphi(double theta, double phi, double t) {
-        return (getW(theta, phi + da, t) - getW(theta, phi, t)) / da;
+    public double get_dW_dphi(Vector M, double t) {
+        return (getW(new Vector(M.getThetta(), M.getPhi() + da), t) -
+                getW(new Vector(M.getThetta(), M.getPhi()), t)) / da;
     }
 
-    private static double getW(double theta, double phi, double t) {
-        return -0.5 * Math.pow(getM_Ea(theta, phi), 2) - getM_H0(t, theta, phi);
+    private double getW(Vector M, double t) {
+        return -0.5 * Math.pow(getM_Ea(M), 2) - getM_H0(M, t);
     }
 
-    private static double getM_H0(double t, double theta, double phi) {
-        Vector h0 = getH0(t);
-        return sin(theta) * cos(phi) * h0.getX() +
-                sin(theta) * sin(phi) * h0.getY() +
-                cos(theta) * h0.getZ();
+    private double getM_H0(Vector M, double t) {
+        Vector h0 = outerField.getValue(M, t);
+        return M.getSinTheta() * M.getCosPhi() * h0.getX() +
+                M.getSinTheta() * M.getSinPhi() * h0.getY() +
+                M.getCosTheta() * h0.getZ();
     }
 
-    private static Vector getH0(double t) {
-        return new Vector(h * cos(w * t), h * sin(w * t), 0);
-    }
-
-    private static double getM_Ea(double theta, double phi) {
-        return sin(theta) * cos(phi) * SIN_THETA_AN * COS_PHI_AN +
-                sin(theta) * sin(phi) * SIN_THETA_AN * SIN_PHI_AN +
-                cos(theta) * COS_THETA_AN;
+    private double getM_Ea(Vector M) {
+        return M.getSinTheta() * M.getCosPhi() * anisotropyField.getAxe().getSinTheta() * anisotropyField.getAxe().getCosPhi() +
+                M.getSinTheta() * M.getSinPhi() * anisotropyField.getAxe().getSinTheta() * anisotropyField.getAxe().getSinPhi() +
+                M.getCosTheta() * anisotropyField.getAxe().getCosTheta();
     }
 }

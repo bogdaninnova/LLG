@@ -1,11 +1,15 @@
 package main;
 
+import main.fields.Field;
+
 import java.util.ArrayList;
 
 public abstract class Calculation {
 
 	public static final double dt = Math.pow(10, -3);
 	protected double t = 0;
+	public Vector M;
+	public Vector dM;
 	protected ArrayList<Vector> array = new ArrayList<>();
 
 	public static final double sigma = 0 * Math.pow(10, 18);
@@ -32,14 +36,17 @@ public abstract class Calculation {
 	protected static final double ALPHA = alpha0 + getAlphaSigma();
 
 
+	protected double omega;
 
 
 	protected static final double constant = -1 / (Math.pow(1 - ksi, 2) + Math.pow(ALPHA, 2));
 
 
+	public double getOmega() {
+		return omega;
+	}
 
-
-
+	public abstract Vector getHeff(Vector M, double t);
 
 	public abstract void run();
 	
@@ -82,6 +89,10 @@ public abstract class Calculation {
 
 	private static  double getKsi() {
 		return 8 * Math.PI / 3 * modM / Ha * getTaoAnomal();
+	}
+
+	protected void setBeginningLocation(Vector vector) {
+		M = vector;
 	}
 
 	public static void print() {
