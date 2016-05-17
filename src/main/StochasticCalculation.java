@@ -19,11 +19,9 @@ public class StochasticCalculation extends Calculation {
     private static final double E = Ha * modM * V / (Kb * T);
     private static final double SQRT_2_ALPHA_E = Math.sqrt(2 * ALPHA / E);
 
-    private PeriodCounter pc = new PeriodCounter();
-
     public StochasticCalculation(Field... fields) {
         setFields(fields);
-        pc.externalReset(this);
+        update();
     }
 
     public void setFields(Field... fields) {
@@ -62,34 +60,10 @@ public class StochasticCalculation extends Calculation {
         return outerField.getValue(M, t).plus(anisotropyField.getValue(M, t));
     }
 
+    @Deprecated
     @Override
-    public void run() {
-        pc.externalReset(this);
-        wait(300d);
-        while (true) {
-            iteration();
-            pc.update(this);
-            if (pc.isOver())
-                break;
-        }
-        for (Vector vector : pc.list)
-            array.add(vector);
-    }
-
-    @Override
-    public void run(double waitingTime, double workingTime) {
-        wait(waitingTime);
-        while (true) {
-            iteration();
-            pc.update(this);
-            array.add(new Vector(M));
-            if (t >  waitingTime + workingTime)
-                break;
-        }
-    }
-
-    public double getEnergy() {
-        return pc.getEnergy();
+    public Vector getDerHeff(Vector M, double t) {
+        return new Vector();
     }
 
     @Override
@@ -133,19 +107,7 @@ public class StochasticCalculation extends Calculation {
     }
 
     private double getW(Vector M, double t) {
-        return -0.5 * Math.pow(getM_Ea(M), 2) - getM_H0(M, t);
-    }
-
-    private double getM_H0(Vector M, double t) {
-        Vector h0 = outerField.getValue(M, t);
-        return M.getSinTheta() * M.getCosPhi() * h0.getX() +
-                M.getSinTheta() * M.getSinPhi() * h0.getY() +
-                M.getCosTheta() * h0.getZ();
-    }
-
-    private double getM_Ea(Vector M) {
-        return M.getSinTheta() * M.getCosPhi() * anisotropyField.getAxe().getSinTheta() * anisotropyField.getAxe().getCosPhi() +
-                M.getSinTheta() * M.getSinPhi() * anisotropyField.getAxe().getSinTheta() * anisotropyField.getAxe().getSinPhi() +
-                M.getCosTheta() * anisotropyField.getAxe().getCosTheta();
+        return -0.5 * Math.pow(M.dotProduct(anisotropyField.getAxe()), 2)
+                - M.dotProduct(outerField.getValue(M, t));
     }
 }

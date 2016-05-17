@@ -1,16 +1,16 @@
 package main;
 
-import main.fields.Field;
-
 import java.util.ArrayList;
 
 public abstract class Calculation {
+
 
 	public static final double dt = Math.pow(10, -3);
 	protected double t = 0;
 	public Vector M;
 	public Vector dM;
 	protected ArrayList<Vector> array = new ArrayList<>();
+	protected PeriodCounter pc = new PeriodCounter();
 
 	public static final double sigma = 0 * Math.pow(10, 18);
 	public static final double nu = 0 * Math.pow(10, 18);//TODO find AHE koeff
@@ -47,10 +47,28 @@ public abstract class Calculation {
 	}
 
 	public abstract Vector getHeff(Vector M, double t);
+	public abstract Vector getDerHeff(Vector M, double t);
 
-	public abstract void run();
-	
-	public abstract void run(double waitingTime, double workingTime);
+	public void run() {
+		update();
+		wait(300d);
+		while (true) {
+			iteration();
+			pc.update(this);
+			if (pc.isOver())
+				break;
+		}
+		for (Vector vector : pc.list)
+			array.add(vector);
+	}
+
+	public double getEnergy() {
+		return pc.getEnergy();
+	}
+
+	public Vector getM_aver() {
+		return pc.getM_aver();
+	}
 	
 	protected void wait(double waitingTime) {
 		while (t < waitingTime) 
@@ -93,6 +111,24 @@ public abstract class Calculation {
 
 	protected void setBeginningLocation(Vector vector) {
 		M = vector;
+	}
+
+	protected void update() {
+		pc.externalReset(this);
+		array = new ArrayList<>();
+		t = 0;
+	}
+
+	public void run(double waitingTime, double workingTime) {
+		update();
+		wait(waitingTime);
+		while (true) {
+			iteration();
+			pc.update(this);
+			array.add(new Vector(M));
+			if (t >  waitingTime + workingTime)
+				break;
+		}
 	}
 
 	public static void print() {

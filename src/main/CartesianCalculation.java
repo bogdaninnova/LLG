@@ -7,33 +7,13 @@ import java.util.ArrayList;
 
 public class CartesianCalculation extends Calculation {
 
-	
-
-
 	protected ArrayList<Field> fields;
-
-
-	private PeriodCounter pc = new PeriodCounter();
 
 	public CartesianCalculation(Field... fields) {
 		setFields(fields);
 		update();
 	}
-	
-	public double getEnergy() {
-		return pc.getEnergy();
-	}
 
-	public Vector getM_aver() {
-		return pc.getM_aver();
-	}
-
-	private void update() {
-		pc.externalReset(this);
-		array = new ArrayList<>();
-		t = 0;
-	}
-	
 	public void setFields(Field... fields) {
 		dM = new Vector();
 		this.fields = new ArrayList<>();
@@ -63,32 +43,6 @@ public class CartesianCalculation extends Calculation {
 			if (field.getClass().equals(fieldClass))
 				return field;
 		return null;
-	}
-
-	public void run(double waitingTime, double workingTime) {
-		update();
-		wait(waitingTime);
-		while (true) {
-			iteration();
-			pc.update(this);
-			array.add(new Vector(M));
-			if (t >  waitingTime + workingTime)
-				break;
-		}
-	}
-	
-	public void run() {
-		update();
-		wait(300d);
-		while (true) {
-			iteration();
-			
-			pc.update(this);
-			if (pc.isOver())
-				break;
-		}
-		for (Vector vector : pc.list)
-			array.add(vector);
 	}
 
 	protected void iteration() {
@@ -144,6 +98,7 @@ public class CartesianCalculation extends Calculation {
 				(c1_MxH.getZ() + c2_MxMxH.getZ())).multiply(constant);
 	}
 
+	@Override
 	public Vector getHeff(Vector M, double t) {
 		Vector temp = new Vector();
 

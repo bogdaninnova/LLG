@@ -17,7 +17,7 @@ public class Launcher {
 
 		double theta = Math.PI / 4;
 		double phi = 0;
-		double h = 0.4;
+		double h = 0.3;
 		double w = 1;
 //		oneParticle("circular", theta, phi, h, w, "hall\\Decart", true);
 //
