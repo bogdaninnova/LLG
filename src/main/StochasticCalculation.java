@@ -96,6 +96,11 @@ public class StochasticCalculation extends Calculation {
         t += dt;
     }
 
+    @Override
+    public Vector getEasyAxe() {
+        return anisotropyField.getAxe();
+    }
+
     public double get_dW_dtheta(Vector M, double t) {
         return (getW(new Vector(M.getThetta() + da, M.getPhi()), t) -
                 getW(new Vector(M.getThetta(), M.getPhi()), t)) / da;
@@ -107,7 +112,7 @@ public class StochasticCalculation extends Calculation {
     }
 
     private double getW(Vector M, double t) {
-        return -0.5 * Math.pow(M.dotProduct(anisotropyField.getAxe()), 2)
+        return -0.5 * Math.pow(M.dotProduct(getEasyAxe()), 2)
                 - M.dotProduct(outerField.getValue(M, t));
     }
 }

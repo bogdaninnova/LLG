@@ -50,7 +50,12 @@ public class CartesianCalculation extends Calculation {
 		M = M.plus(dM);
 		t += dt;
 	}
-	
+
+	@Override
+	public Vector getEasyAxe() {
+		return ((Anisotropy) getField(Anisotropy.class)).getAxe();
+	}
+
 	private Vector getdM(Vector M) {
 		Vector d1, d2, d3, d4;
 		d1 = LLG(M.getX(), M.getY(), M.getZ(), t);

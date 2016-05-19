@@ -76,7 +76,10 @@ public abstract class Calculation {
 	}
 	
 	protected abstract void iteration();
-	
+
+
+	public abstract Vector getEasyAxe();
+
 	public ArrayList<Vector> getArray() {
 		return array;
 	}
