@@ -1,5 +1,6 @@
 package main;
 
+import main.fields.Elliptical;
 import java.util.LinkedList;
 
 public class PeriodCounter {
@@ -46,7 +47,7 @@ public class PeriodCounter {
 		} else
 			isLastInside = false;
 
-		if (time > (LAPS * 10 / c.getOmega()))
+		if (time > (LAPS * 10 / c.getField(Elliptical.class).getW()))
 			isBegin = false;
 
 //		System.out.println("c.t "+c.t);
@@ -126,7 +127,7 @@ public class PeriodCounter {
 		isQ = false;
 		list = new LinkedList<>();
 		energyList = new LinkedList<>();
-		MAX_PERIOD = maxWaiting2period(c.getOmega());
+		MAX_PERIOD = maxWaiting2period(c.getField(Elliptical.class).getW());
 	}
 
 

@@ -26,18 +26,9 @@ public class StochasticCalculation extends Calculation {
 
     public void setFields(Field... fields) {
         dM = new Vector();
-        this.omega = -1;
         setBeginningLocation(null);
         for (Field field : fields) {
-            if (field.getW() != null) {
-                if (omega == -1) {
-                    this.omega = field.getW();
-                    this.outerField = field;
-                } else {
-                    throw new IllegalArgumentException("More than one field has frequency");
-                }
-            }
-            if (field.getClass().equals(Anisotropy.class))
+             if (field.getClass().equals(Anisotropy.class))
                 if (M == null) {
                     anisotropyField = (Anisotropy) field;
                     Vector easyAxe = ((Anisotropy) field).getAxe();
@@ -99,6 +90,11 @@ public class StochasticCalculation extends Calculation {
     @Override
     public Vector getEasyAxe() {
         return anisotropyField.getAxe();
+    }
+
+    @Override
+    public Field getField(Class fieldClass) {
+        return null;
     }
 
     public double get_dW_dtheta(Vector M, double t) {

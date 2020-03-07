@@ -14,39 +14,22 @@ public class Launcher {
 
 	public static void main(String...strings) {
 
-
-
 		double theta = Math.PI / 4;
-		double phi = 0;
-		double h = 0.1;
+		double phi = Math.PI / 4;
+		double h = 0.3;
 		double w = 1;
-		Date dat = new Date();
-		oneParticle(false, "circular", theta, phi, h, w, "hall\\Stochastic", true);
-		System.out.println(new Date().getTime() - dat.getTime());
-		System.exit(0);
-//		oneParticle("circular", theta, phi, h, w, "hall\\Decart", true);
-//
-//		Calculation.print();
-
 
 		Date date = new Date();
-		CartesianCalculation c = new CartesianCalculation(new Anisotropy(theta, phi), new Circular(w, h));
-		c.run();
+		CartesianCalculation c = new CartesianCalculation(
+				new Anisotropy(theta, phi),
+				new Elliptical(1, w, h),
+				new Lineal(new Vector(0,0,1), 2, 0.5)
+		);
+		c.run(1000, 1000);
 		System.out.println(new Date().getTime() - date.getTime());
 		new Draw(c.getArray(),
 				((Anisotropy) c.getField(Anisotropy.class)).getAxe(),
-				0.4 * Math.PI, 0.4 * Math.PI, 0, "hall\\Decart").drawTraectory(true);
-
-		System.out.println(c.getEnergy());
-		date = new Date();
-		StochasticCalculation sc = new StochasticCalculation(new Anisotropy(theta, phi), new Circular(w, h));
-		sc.run();
-		new Draw(sc.getArray(), new Vector(theta, phi),
-				0.4 * Math.PI, 0.4 * Math.PI, 0, "hall\\Stochas").drawTraectory(true);
-		System.out.println(sc.getEnergy());
-		System.out.println(new Date().getTime() - date.getTime());
-
-
+				0.4 * Math.PI, 0.4 * Math.PI, 0, "test").drawTraectory(true);
 
 	}
 
@@ -55,19 +38,19 @@ public class Launcher {
 		switch (fieldType) {
 			case "circular" :
 				if (isStochastic)
-					c = new StochasticCalculation(new Anisotropy(theta, fi), new Circular(w, h));
+					c = new StochasticCalculation(new Anisotropy(theta, fi), new Elliptical(1, w, h));
 				else
-					c = new CartesianCalculation(new Anisotropy(theta, fi), new Circular(w, h));
+					c = new CartesianCalculation(new Anisotropy(theta, fi), new Elliptical(1, w, h));
 				break;
 			case "lineal" :
 				if (isStochastic)
-					c = new StochasticCalculation(new Anisotropy(theta, fi), new Circular(w, h));
+					c = new StochasticCalculation(new Anisotropy(theta, fi), new Elliptical(1, w, h));
 				else
 					c = new CartesianCalculation(new Anisotropy(theta, fi), new Lineal( new Vector(1,0,0), w, h));
 				break;
 			case "elliptical" :
 				if (isStochastic)
-					c = new StochasticCalculation(new Anisotropy(theta, fi), new Circular(w, h));
+					c = new StochasticCalculation(new Anisotropy(theta, fi), new Elliptical(1, w, h));
 				else
 					c = new CartesianCalculation(new Anisotropy(theta, fi), new Elliptical(0.5, w, h));
 				break;

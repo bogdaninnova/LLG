@@ -1,5 +1,6 @@
 package main;
 
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import main.fields.Anisotropy;
 import main.fields.Field;
 
@@ -17,16 +18,9 @@ public class CartesianCalculation extends Calculation {
 	public void setFields(Field... fields) {
 		dM = new Vector();
 		this.fields = new ArrayList<>();
-		this.omega = -1;
 		setBeginningLocation(null);
 		for (Field field : fields) {
 			this.fields.add(field);
-			if (field.getW() != null)
-				if (omega == -1) {
-					this.omega = field.getW();
-				} else {
-					throw new IllegalArgumentException("More than one field has frequency");
-				}
 			if (field.getClass().equals(Anisotropy.class))
 				if (M == null) {
 					setBeginningLocation(((Anisotropy) field).getAxe());
@@ -57,11 +51,10 @@ public class CartesianCalculation extends Calculation {
 	}
 
 	private Vector getdM(Vector M) {
-		Vector d1, d2, d3, d4;
-		d1 = LLG(M.getX(), M.getY(), M.getZ(), t);
-		d2 = LLG(M.getX() + dt / 2 * d1.getX(), M.getY() + dt / 2 * d1.getY(), M.getZ() + dt / 2 * d1.getZ(), t + dt / 2);
-		d3 = LLG(M.getX() + dt / 2 * d2.getX(), M.getY() + dt / 2 * d2.getY(), M.getZ() + dt / 2 * d2.getZ(), t + dt / 2);
-		d4 = LLG(M.getX() + dt / 1 * d3.getX(), M.getY() + dt / 1 * d3.getY(), M.getZ() + dt / 1 * d3.getZ(), t + dt / 1);
+		Vector d1 = LLG(new Vector(M.getX(), M.getY(), M.getZ()), t);
+		Vector d2 = LLG(new Vector(M.getX() + dt / 2 * d1.getX(), M.getY() + dt / 2 * d1.getY(), M.getZ() + dt / 2 * d1.getZ()), t + dt / 2);
+		Vector d3 = LLG(new Vector(M.getX() + dt / 2 * d2.getX(), M.getY() + dt / 2 * d2.getY(), M.getZ() + dt / 2 * d2.getZ()), t + dt / 2);
+		Vector d4 = LLG(new Vector(M.getX() + dt / 1 * d3.getX(), M.getY() + dt / 1 * d3.getY(), M.getZ() + dt / 1 * d3.getZ()), t + dt / 1);
 
 		return new Vector(
 				dt/6 * (d1.getX() + 2 * d2.getX() + 2 * d3.getX() + d4.getX()),
@@ -69,8 +62,7 @@ public class CartesianCalculation extends Calculation {
 				dt/6 * (d1.getZ() + 2 * d2.getZ() + 2 * d3.getZ() + d4.getZ()));
 	}
 
-	private Vector LLG(double mx, double my, double mz, double t) {
-		Vector M = new Vector(mx, my, mz);
+	private Vector LLG(Vector M, double t) {
 		Vector MxH = M.crossProduct(getHeff(M, t));
 		Vector a_MxHxH = M.crossProduct(MxH).multiply(ALPHA);
 
@@ -90,7 +82,6 @@ public class CartesianCalculation extends Calculation {
 				dH0.multiply(-mu1 * taoSigma),
 				M.crossProduct(dH0).multiply(taoAnomal));
 
-
 		Vector MxH = M.crossProduct(H);
 		Vector MxMxH = M.crossProduct(MxH);
 
@@ -105,21 +96,11 @@ public class CartesianCalculation extends Calculation {
 
 	@Override
 	public Vector getHeff(Vector M, double t) {
-		Vector temp = new Vector();
-
-		for (Field field : fields)
-			temp = temp.plus(field.getValue(M, t));
-
-		return temp;
+		return fields.stream().map(field -> field.getValue(M, t)).reduce(new Vector(), Vector::plus);
 	}
 
 	public Vector getDerHeff(Vector M, double t) {
-		Vector temp = new Vector();
-
-		for (Field field : fields)
-			temp = temp.plus(field.getDerivative(M, t));
-
-		return temp;
+		return fields.stream().map(field -> field.getDerivative(M, t)).reduce(new Vector(), Vector::plus);
 	}
 
 }

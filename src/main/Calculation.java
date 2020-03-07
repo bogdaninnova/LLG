@@ -1,9 +1,10 @@
 package main;
 
+import main.fields.Field;
+
 import java.util.ArrayList;
 
 public abstract class Calculation {
-
 
 	public static final double dt = Math.pow(10, -3);
 	protected double t = 0;
@@ -17,7 +18,7 @@ public abstract class Calculation {
 
 	private static final double alpha0 = 0.01;
 	protected static final double R = Math.pow(10, -5);
-	protected static final double V = (4/3) * Math.PI * Math.pow(R, 3);
+	protected static final double V = ((double) 4/3) * Math.PI * Math.pow(R, 3);
 	protected static final double mu1 = 1;
 	private static final double mu2 = 1;
 	private static final double c = 3 * Math.pow(10, 10);
@@ -36,15 +37,15 @@ public abstract class Calculation {
 	protected static final double ALPHA = alpha0 + getAlphaSigma();
 
 
-	protected double omega;
+	//protected double omega;
 
 
 	protected static final double constant = -1 / (Math.pow(1 - ksi, 2) + Math.pow(ALPHA, 2));
 
 
-	public double getOmega() {
-		return omega;
-	}
+	//public double getOmega() {
+	//	return omega;
+	//}
 
 	public abstract Vector getHeff(Vector M, double t);
 	public abstract Vector getDerHeff(Vector M, double t);
@@ -52,14 +53,11 @@ public abstract class Calculation {
 	public void run() {
 		update();
 		wait(300d);
-		while (true) {
+		do {
 			iteration();
 			pc.update(this);
-			if (pc.isOver())
-				break;
-		}
-		for (Vector vector : pc.list)
-			array.add(vector);
+		} while (!pc.isOver());
+		array.addAll(pc.list);
 	}
 
 	public double getEnergy() {
@@ -82,14 +80,6 @@ public abstract class Calculation {
 
 	public ArrayList<Vector> getArray() {
 		return array;
-	}
-	
-	protected static double sin(double a) {
-		return Math.sin(a);
-	}
-	
-	protected static double cos(double a) {
-		return Math.cos(a);
 	}
 	
 	private static double getTaoSigma() {
@@ -116,6 +106,8 @@ public abstract class Calculation {
 		M = vector;
 	}
 
+	public abstract Field getField(Class fieldClass);
+
 	protected void update() {
 		pc.externalReset(this);
 		array = new ArrayList<>();
@@ -125,41 +117,11 @@ public abstract class Calculation {
 	public void run(double waitingTime, double workingTime) {
 		update();
 		wait(waitingTime);
-		while (true) {
+		do {
 			iteration();
 			pc.update(this);
 			array.add(new Vector(M));
-			if (t >  waitingTime + workingTime)
-				break;
-		}
-	}
-
-	public static void print() {
-//		System.out.println("Light speed = " + c);
-//		System.out.println("dt = " + dt);
-//		System.out.println("Radius = " + a);
-//		System.out.println("-----------------------------------");
-		System.out.println("sigma = " + sigma);
-		System.out.println("nu = " + nu);
-		System.out.println("-----------------------------------");
-		System.out.println("alpha0 = " + alpha0);
-		System.out.println("ALPHA = " + ALPHA);
-		System.out.println("getAlphaSigma() = " + getAlphaSigma());
-//		System.out.println("-----------------------------------");
-//		System.out.println("mu1 = " + mu1);
-//		System.out.println("mu2 = " + mu2);
-//		System.out.println("kappa = " + kappa);
-//		System.out.println("-----------------------------------");
-//		System.out.println("gamma = " + gamma);
-//		System.out.println("Ha = " + Ha);
-//		System.out.println("modulM = " + modulM);
-		System.out.println("-----------------------------------");
-		System.out.println("ksi = " + ksi);
-		System.out.println("taoSigma = " + taoSigma);
-		System.out.println("taoAnomal = " + taoAnomal);
-		System.out.println("-----------------------------------");
-		System.out.println("constant = " + constant);
-
+		} while ((t < waitingTime + workingTime));
 	}
 
 }

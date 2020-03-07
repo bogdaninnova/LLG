@@ -7,7 +7,7 @@ public class Anisotropy extends Field {
 	private Vector axeOfAnisotropy;
 	
 	public Anisotropy(double tetta, double fi) {
-		setVector(new Vector(tetta, fi));
+		setAxe(new Vector(tetta, fi));
 	}
 	
 	public Vector getValue(Vector M, double t) {
@@ -23,7 +23,7 @@ public class Anisotropy extends Field {
 		return axeOfAnisotropy;
 	}
 	
-	public void setVector(Vector axeOfAnisotropy) {
+	public void setAxe(Vector axeOfAnisotropy) {
 		this.axeOfAnisotropy = axeOfAnisotropy;
 	}
 

@@ -1,6 +1,6 @@
 package main;
 
-public class Vector {
+public class Vector implements Cloneable {
 
 	private final double x;
 	private final double y;
@@ -151,4 +151,5 @@ public class Vector {
 	public Vector clone() {
 		return new Vector(x, y, z);
 	}
+
 }
